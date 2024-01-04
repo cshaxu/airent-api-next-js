@@ -1,0 +1,23 @@
+<% if (entity.api && entity.api.booleans.hasGetOne) { -%>
+import * as <%= entity.api.strings.actionClass %> from '@/backend/entities/generated/<%= utils.toKababCase(entity.name) %>-action';
+import { handleGetOne } from 'airent-api';
+import { <%= entity.api.strings.getOneParams %> } from '<%= entity.api.request.import %>';
+<%- config.authenticatorImport %>
+
+export const POST = handleGetOne({
+  paramsZod: <%= entity.api.strings.getOneParams %>,
+  apiExecutor: <%= entity.api.strings.actionClass %>.<%= entity.api.strings.getOneAction %>,
+  authenticator,
+  options: {
+  <%_ if ((entity.api.internalMethods ?? []).includes('getOne')) { -%>
+    requireInternal: true,
+  <%_ } -%>
+  <%_ if ((entity.api.adminMethods ?? []).includes('getOne')) { -%>
+    requireAdmin: true,
+  <%_ } -%>
+  <%_ if ((entity.api.publicMethods ?? []).includes('getOne')) { -%>
+    requireLogin: false,
+  <%_ } -%>
+  },
+});
+<% } -%>

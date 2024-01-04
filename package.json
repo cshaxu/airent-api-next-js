@@ -1,0 +1,36 @@
+{
+  "name": "airent-api-next",
+  "version": "0.1.4",
+  "description": "Airent Api Extension for Next.js",
+  "main": "./lib/index.js",
+  "bin": {
+    "airent-api-next": "./bin/index.js"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cshaxu/airent-api-next-js.git"
+  },
+  "keywords": [
+    "api",
+    "backend",
+    "data",
+    "entity",
+    "framework",
+    "orm",
+    "pojo",
+    "presentation"
+  ],
+  "author": "cshaxu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cshaxu/airent-api-next-js/issues"
+  },
+  "homepage": "https://github.com/cshaxu/airent-api-next-js#readme",
+  "files": [
+    "bin",
+    "resources"
+  ],
+  "dependencies": {},
+  "devDependencies": {}
+}
