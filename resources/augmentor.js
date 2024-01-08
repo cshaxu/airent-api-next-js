@@ -4,7 +4,7 @@ function augmentOne(entity, config, utils) {
   }
 
   const kababPluralEntityName = utils.toKababCase(utils.pluralize(entity.name));
-  const serverApiOutputPath = `src/app${config.apiPath}/${kababPluralEntityName}`;
+  const serverApiOutputPath = `${config.nextApiSourcePath}/${config.apiPath}/${kababPluralEntityName}`;
   const serverApiOutputs = {
     "node_modules/airent-api-next/resources/server-create-one-template.ts.ejs": `${serverApiOutputPath}/create-one/route.ts`,
     "node_modules/airent-api-next/resources/server-delete-one-template.ts.ejs": `${serverApiOutputPath}/delete-one/route.ts`,

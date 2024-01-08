@@ -34,6 +34,8 @@ async function getShouldEnable(name, isEnabled) {
  *  @property {?string} airentApiPackage
  *  @property {string} requestContextImport
  *  @property {?string} clientTypePath
+ *  @property {string} nextApiSourcePath
+ *  @property {?string} nextHandlersPath
  */
 
 const PROJECT_PATH = process.cwd();
@@ -85,6 +87,26 @@ async function configure() {
     API_NEXT_SERVER_GET_ONE_TEMPLATE_PATH,
     API_NEXT_SERVER_UPDATE_ONE_TEMPLATE_PATH,
   ].forEach((name) => addTemplate(config, name));
+
+  if (config.nextApiSourcePath === undefined) {
+    config.nextApiSourcePath = await askQuestion(
+      "Next Api Source Path",
+      "src/app"
+    );
+  }
+  if (config.nextHandlersPath === undefined) {
+    config.nextHandlersPath = path
+      .relative(
+        path.join(
+          PROJECT_PATH,
+          config.nextApiSourcePath,
+          config.apiPath,
+          "entities/action"
+        ),
+        path.join(PROJECT_PATH, config.entityPath, "/generated")
+      )
+      .replaceAll("\\", "/");
+  }
 
   const content = JSON.stringify(config, null, 2) + "\n";
   await fs.promises.writeFile(CONFIG_FILE_PATH, content);

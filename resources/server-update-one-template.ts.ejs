@@ -1,24 +1,5 @@
 <% if (entity.api && entity.api.booleans.hasUpdateOne) { -%>
-import * as <%= entity.api.strings.actionClass %> from '@/backend/entities/generated/<%= utils.toKababCase(entity.name) %>-action';
-import { handleUpdateOne } from 'airent-api';
-import { <%= entity.api.strings.getOneParams %>, <%= entity.api.strings.updateOneBody %> } from '<%= entity.api.request.import %>';
-<%- config.authenticatorImport %>
+import { <%= entity.api.strings.updateOneHandler %> } from '<%= config.nextHandlersPath %>/<%= utils.toKababCase(entity.name) %>-handlers';
 
-export const POST = handleUpdateOne({
-  paramsZod: <%= entity.api.strings.getOneParams %>,
-  bodyZod: <%= entity.api.strings.updateOneBody %>,
-  apiExecutor: <%= entity.api.strings.actionClass %>.<%= entity.api.strings.updateOneAction %>,
-  authenticator,
-  options: {
-  <%_ if ((entity.api.internalMethods ?? []).includes('updateOne')) { -%>
-    requireInternal: true,
-  <%_ } -%>
-  <%_ if ((entity.api.adminMethods ?? []).includes('updateOne')) { -%>
-    requireAdmin: true,
-  <%_ } -%>
-  <%_ if ((entity.api.publicMethods ?? []).includes('updateOne')) { -%>
-    requireLogin: false,
-  <%_ } -%>
-  },
-});
+export const POST = <%= entity.api.strings.updateOneHandler %>;
 <% } -%>
