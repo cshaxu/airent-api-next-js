@@ -1,7 +1,7 @@
 {
-  "name": "airent-api-next",
-  "version": "0.1.4",
-  "description": "Airent Api Extension for Next.js",
+  "name": "@airent/api-next",
+  "version": "0.1.6",
+  "description": "Next.js Extension for Airent API 0.1.6",
   "main": "./lib/index.js",
   "bin": {
     "airent-api-next": "./bin/index.js"
