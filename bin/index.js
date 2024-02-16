@@ -92,18 +92,13 @@ async function configure() {
   if (config.nextApiSourcePath === undefined) {
     config.nextApiSourcePath = await askQuestion(
       "Next Api Source Path",
-      "src/app"
+      "src/app/api"
     );
   }
   if (config.nextHandlersPath === undefined) {
     config.nextHandlersPath = path
       .relative(
-        path.join(
-          PROJECT_PATH,
-          config.nextApiSourcePath,
-          config.apiPath,
-          "entities/action"
-        ),
+        path.join(PROJECT_PATH, config.nextApiSourcePath, "/route"),
         path.join(PROJECT_PATH, config.entityPath, "/generated")
       )
       .replaceAll("\\", "/");

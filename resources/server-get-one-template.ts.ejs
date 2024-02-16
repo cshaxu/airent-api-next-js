@@ -1,5 +1,5 @@
 <% if (entity.api && entity.api.booleans.hasGetOne) { -%>
-import { <%= entity.api.strings.getOneHandler %> } from '<%= config.nextHandlersPath %>/<%= utils.toKababCase(entity.name) %>-handlers';
+import <%= entity.api.strings.handlersClass %> from '<%= config.nextHandlersPath %>/<%= `${utils.toKababCase(entity.name)}-handlers${utils.getModuleSuffix(config)}` %>';
 
-export const POST = <%= entity.api.strings.getOneHandler %>;
+export const POST = <%= entity.api.strings.handlersClass %>.getOne;
 <% } -%>

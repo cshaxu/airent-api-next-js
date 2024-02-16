@@ -1,5 +1,5 @@
 <% if (entity.api && entity.api.booleans.hasUpdateOne) { -%>
-import { <%= entity.api.strings.updateOneHandler %> } from '<%= config.nextHandlersPath %>/<%= utils.toKababCase(entity.name) %>-handlers';
+import <%= entity.api.strings.handlersClass %> from '<%= config.nextHandlersPath %>/<%= `${utils.toKababCase(entity.name)}-handlers${utils.getModuleSuffix(config)}` %>';
 
-export const POST = <%= entity.api.strings.updateOneHandler %>;
+export const POST = <%= entity.api.strings.handlersClass %>.updateOne;
 <% } -%>
