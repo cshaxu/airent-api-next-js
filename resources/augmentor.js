@@ -8,6 +8,7 @@ function augmentOne(entity, config, utils) {
   const serverApiOutputs = {
     "node_modules/@airent/api-next/resources/server-get-many-template.ts.ejs": `${config.nextApiSourcePath}/get-many-${kababPluralEntityName}/route.ts`,
     "node_modules/@airent/api-next/resources/server-get-one-template.ts.ejs": `${config.nextApiSourcePath}/get-one-${kababSingularEntityName}/route.ts`,
+    "node_modules/@airent/api-next/resources/server-get-one-safe-template.ts.ejs": `${config.nextApiSourcePath}/get-one-${kababSingularEntityName}-safe/route.ts`,
     "node_modules/@airent/api-next/resources/server-create-one-template.ts.ejs": `${config.nextApiSourcePath}/create-one-${kababSingularEntityName}/route.ts`,
     "node_modules/@airent/api-next/resources/server-delete-one-template.ts.ejs": `${config.nextApiSourcePath}/delete-one-${kababSingularEntityName}/route.ts`,
     "node_modules/@airent/api-next/resources/server-update-one-template.ts.ejs": `${config.nextApiSourcePath}/update-one-${kababSingularEntityName}/route.ts`,
