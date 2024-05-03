@@ -1,12 +1,15 @@
 {
   "name": "@airent/api-next",
-  "version": "0.1.7",
-  "description": "Next.js Extension for Airent API 0.1.7",
+  "version": "0.1.8",
+  "description": "Next.js Extension for Airent API 0.1.8",
   "main": "./lib/index.js",
   "bin": {
     "airent-api-next": "./bin/index.js"
   },
-  "scripts": {},
+  "scripts": {
+    "build": "rm -rf ./lib && tsc -p tsconfig.json && crlf --set=LF bin/*",
+    "test": "rm -rf ./test-output && node ./bin/index.js generate"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cshaxu/airent-api-next-js.git"
@@ -17,6 +20,7 @@
     "data",
     "entity",
     "framework",
+    "next",
     "orm",
     "pojo",
     "presentation"
@@ -29,8 +33,19 @@
   "homepage": "https://github.com/cshaxu/airent-api-next-js#readme",
   "files": [
     "bin",
+    "lib",
     "resources"
   ],
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "@airent/api": "github:cshaxu/airent-api-js#e7c03572725f952aa47db928cb233e346682197f",
+    "ejs": "^3.1.10",
+    "http-errors": "^2.0.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/http-errors": "^2.0.4",
+    "@types/node": "^20.10.1",
+    "crlf": "^1.1.1",
+    "typescript": "^5.3.2"
+  }
 }

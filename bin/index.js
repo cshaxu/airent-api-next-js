@@ -16,26 +16,34 @@ function askQuestion(question, defaultAnswer) {
   ).then((a) => (a?.length ? a : defaultAnswer));
 }
 
-async function getShouldEnable(name, isEnabled) {
-  if (isEnabled) {
-    return false;
-  }
+async function getShouldEnable(name) {
   const shouldEnable = await askQuestion(`Enable "${name}"`, "yes");
   return shouldEnable === "yes";
 }
 
+/** @typedef {Object} ApiNextConfig
+ *  @property {?string} libImportPath
+ *  @property {string} appPath
+ *  @property {string} airentApiPath
+ *  @property {?string} cronSourcePath
+ *  @property {?string} cronApiPath
+ *  @property {?string} cronHandlerOptions
+ *  @property {?string} debugSourcePath
+ *  @property {?string} debugApiPath
+ *  @property {?string} debugHandlerOptions
+ *  @property {?string} webhookSourcePath
+ *  @property {?string} webhookApiPath
+ *  @property {?string} webhookHandlerOptions
+ */
+
 /** @typedef {Object} Config
  *  @property {"commonjs" | "module"} type
- *  @property {?string} airentPackage
+ *  @property {?string} libImportPath
  *  @property {string} schemaPath
  *  @property {string} entityPath
  *  @property {?string[]} [augmentors]
  *  @property {?Template[]} [templates]
- *  @property {?string} airentApiPackage
- *  @property {string} requestContextImport
- *  @property {?string} clientTypePath
- *  @property {string} nextApiSourcePath
- *  @property {?string} nextHandlersPath
+ *  @property {?ApiNextConfig} apiNext
  */
 
 const PROJECT_PATH = process.cwd();
@@ -72,38 +80,95 @@ async function configure() {
   const config = await loadConfig();
   const { augmentors } = config;
   const isApiNextEnabled = augmentors.includes(API_NEXT_AUGMENTOR_PATH);
-  const shouldEnableApiNext = await getShouldEnable(
-    "Api Next",
-    isApiNextEnabled
-  );
-  if (shouldEnableApiNext) {
-    augmentors.push(API_NEXT_AUGMENTOR_PATH);
-  } else if (!isApiNextEnabled) {
+  const shouldEnableApiNext = isApiNextEnabled
+    ? true
+    : await getShouldEnable("Api Next");
+  if (!shouldEnableApiNext) {
     return;
   }
+  if (!isApiNextEnabled) {
+    augmentors.push(API_NEXT_AUGMENTOR_PATH);
+    [
+      API_NEXT_SERVER_CREATE_ONE_TEMPLATE_PATH,
+      API_NEXT_SERVER_DELETE_ONE_TEMPLATE_PATH,
+      API_NEXT_SERVER_GET_MANY_TEMPLATE_PATH,
+      API_NEXT_SERVER_GET_ONE_TEMPLATE_PATH,
+      API_NEXT_SERVER_GET_ONE_SAFE_TEMPLATE_PATH,
+      API_NEXT_SERVER_UPDATE_ONE_TEMPLATE_PATH,
+    ].forEach((name) => addTemplate(config, name));
+  }
 
-  [
-    API_NEXT_SERVER_CREATE_ONE_TEMPLATE_PATH,
-    API_NEXT_SERVER_DELETE_ONE_TEMPLATE_PATH,
-    API_NEXT_SERVER_GET_MANY_TEMPLATE_PATH,
-    API_NEXT_SERVER_GET_ONE_TEMPLATE_PATH,
-    API_NEXT_SERVER_GET_ONE_SAFE_TEMPLATE_PATH,
-    API_NEXT_SERVER_UPDATE_ONE_TEMPLATE_PATH,
-  ].forEach((name) => addTemplate(config, name));
+  config.apiNext.appPath = await askQuestion(
+    "Next.js App Path",
+    config.apiNext.appPath ?? "./src/app"
+  );
 
-  if (config.nextApiSourcePath === undefined) {
-    config.nextApiSourcePath = await askQuestion(
-      "Next Api Source Path",
-      "src/app/api"
+  config.apiNext.airentApiPath = await askQuestion(
+    "Airent API Path",
+    config.apiNext.airentApiPath ?? "/api"
+  );
+
+  const isCronApiEnabled =
+    config.apiNext.cronSourcePath !== undefined &&
+    config.apiNext.cronApiPath !== undefined;
+  const shouldEnableCronApi = isCronApiEnabled
+    ? true
+    : await getShouldEnable("Cron API");
+  if (shouldEnableCronApi) {
+    config.apiNext.cronSourcePath = await askQuestion(
+      "Cron Source Path",
+      config.apiNext.cronSourcePath ?? "./src/jobs"
+    );
+    config.apiNext.cronApiPath = await askQuestion(
+      "Cron API Path",
+      config.apiNext.cronApiPath ?? "/api/jobs"
+    );
+    config.apiNext.cronHandlerOptions = await askQuestion(
+      "Cron Handler Options",
+      config.apiNext.cronHandlerOptions ?? ""
     );
   }
-  if (config.nextHandlersPath === undefined) {
-    config.nextHandlersPath = path
-      .relative(
-        path.join(PROJECT_PATH, config.nextApiSourcePath, "/route"),
-        path.join(PROJECT_PATH, config.entityPath, "/generated")
-      )
-      .replaceAll("\\", "/");
+
+  const isDebugApiEnabled =
+    config.apiNext.debugSourcePath !== undefined &&
+    config.apiNext.debugApiPath !== undefined;
+  const shouldEnableDebugApi = isDebugApiEnabled
+    ? true
+    : await getShouldEnable("Debug API");
+  if (shouldEnableDebugApi) {
+    config.apiNext.debugSourcePath = await askQuestion(
+      "Debug Source Path",
+      config.apiNext.debugSourcePath ?? "./src/debug"
+    );
+    config.apiNext.debugApiPath = await askQuestion(
+      "Debug API Path",
+      config.apiNext.debugApiPath ?? "/api/debug"
+    );
+    config.apiNext.debugHandlerOptions = await askQuestion(
+      "Debug Handler Options",
+      config.apiNext.debugHandlerOptions ?? ""
+    );
+  }
+
+  const isWebhookApiEnabled =
+    config.apiNext.webhookSourcePath !== undefined &&
+    config.apiNext.webhookApiPath !== undefined;
+  const shouldEnableWebhookApi = isWebhookApiEnabled
+    ? true
+    : await getShouldEnable("Webhook API");
+  if (shouldEnableWebhookApi) {
+    config.apiNext.webhookSourcePath = await askQuestion(
+      "Webhook Source Path",
+      config.apiNext.webhookSourcePath ?? "./src/webhooks"
+    );
+    config.apiNext.webhookApiPath = await askQuestion(
+      "Webhook API Path",
+      config.apiNext.webhookApiPath ?? "/api/webhooks"
+    );
+    config.apiNext.webhookHandlerOptions = await askQuestion(
+      "Webhook Handler Options",
+      config.apiNext.webhookHandlerOptions ?? ""
+    );
   }
 
   const content = JSON.stringify(config, null, 2) + "\n";
@@ -111,16 +176,21 @@ async function configure() {
   console.log(`[AIRENT-API-NEXT/INFO] Package configured.`);
 }
 
-async function main() {
+async function main(args) {
   try {
     if (!fs.existsSync(CONFIG_FILE_PATH)) {
       throw new Error('[AIRENT-API-NEXT/ERROR] "airent.config.json" not found');
     }
 
-    await configure();
+    if (args.includes("generate")) {
+      const { generate } = require("./generate");
+      await generate(args);
+    } else {
+      await configure();
+    }
   } finally {
     rl.close();
   }
 }
 
-main().catch(console.error);
+main(process.argv.slice(2)).catch(console.error);

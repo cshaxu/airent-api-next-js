@@ -1,0 +1,23 @@
+import { Awaitable } from '@airent/api';
+import { handleDebug, CommonResponse } from '<%- apiNextPackage %>';
+import { Context } from '<%= contextPackage %>';
+import { handlerConfig } from '<%- handlerConfigPackage %>';
+import * as z from 'zod';
+
+<% names.forEach((name) => { -%>
+import { Params as <%= `${utils.toTitleCase(name)}Params` %>, executor as <%= utils.toCamelCase(name) %> } from '<%- debugBasePackage %>/<%= name %>';
+<% }); -%>
+
+const map = new Map<string, [z.ZodTypeAny, (params: any, context: Context) => Awaitable<CommonResponse>]>([
+<% names.forEach((name) => { -%>
+  ['<%= name %>', [<%= `${utils.toTitleCase(name)}Params` %>, <%= utils.toCamelCase(name) %>]],
+<% }); -%>
+]);
+
+export const POST = handleDebug({
+  ...handlerConfig,
+  map,
+<% if (config.apiNext.debugHandlerOptions?.length) { -%>
+  options: <%- config.apiNext.debugHandlerOptions %>,
+<% } -%>
+});

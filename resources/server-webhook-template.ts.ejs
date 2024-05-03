@@ -1,0 +1,13 @@
+import { handleWebhook } from '<%- apiNextPackage %>';
+import { parser, validator, executor } from '<%- webhookPackage %>';
+import { handlerConfig } from '<%- handlerConfigPackage %>';
+
+export const POST = handleWebhook({ 
+  ...handlerConfig,
+  parser,
+  validator,
+  executor,
+<% if (config.apiNext.webhookHandlerOptions?.length) { -%>
+  options: <%- config.apiNext.webhookHandlerOptions %>,
+<% } -%>
+});

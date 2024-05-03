@@ -1,0 +1,15 @@
+import { executor } from '<%- cronPackage %>';
+import { handleCron } from '<%- apiNextPackage %>';
+import { handlerConfig } from '<%- handlerConfigPackage %>';
+
+<% if (maxDuration) { -%>
+export const maxDuration = <%= maxDuration %>;
+<% } -%>
+
+export const GET = handleCron({
+  ...handlerConfig,
+  executor,
+<% if (config.apiNext.cronHandlerOptions?.length) { -%>
+  options: <%- config.apiNext.cronHandlerOptions %>,
+<% } -%>
+});
