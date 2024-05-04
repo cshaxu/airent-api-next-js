@@ -33,7 +33,6 @@ async function getShouldEnable(name) {
  *  @property {?string} debugHandlerOptions
  *  @property {?string} webhookSourcePath
  *  @property {?string} webhookApiPath
- *  @property {?string} webhookHandlerOptions
  */
 
 /** @typedef {Object} Config
@@ -53,12 +52,45 @@ const AIRENT_API_NEXT_RESOURCES_PATH =
   "node_modules/@airent/api-next/resources";
 
 const API_NEXT_AUGMENTOR_PATH = `${AIRENT_API_NEXT_RESOURCES_PATH}/augmentor.js`;
-const API_NEXT_SERVER_CREATE_ONE_TEMPLATE_PATH = `${AIRENT_API_NEXT_RESOURCES_PATH}/server-create-one-template.ts.ejs`;
-const API_NEXT_SERVER_DELETE_ONE_TEMPLATE_PATH = `${AIRENT_API_NEXT_RESOURCES_PATH}/server-delete-one-template.ts.ejs`;
-const API_NEXT_SERVER_GET_MANY_TEMPLATE_PATH = `${AIRENT_API_NEXT_RESOURCES_PATH}/server-get-many-template.ts.ejs`;
-const API_NEXT_SERVER_GET_ONE_TEMPLATE_PATH = `${AIRENT_API_NEXT_RESOURCES_PATH}/server-get-one-template.ts.ejs`;
-const API_NEXT_SERVER_GET_ONE_SAFE_TEMPLATE_PATH = `${AIRENT_API_NEXT_RESOURCES_PATH}/server-get-one-safe-template.ts.ejs`;
-const API_NEXT_SERVER_UPDATE_ONE_TEMPLATE_PATH = `${AIRENT_API_NEXT_RESOURCES_PATH}/server-update-one-template.ts.ejs`;
+
+const API_NEXT_SERVER_CREATE_ONE_TEMPLATE_CONFIG = {
+  name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-create-one-template.ts.ejs`,
+  outputPath: `create-one-{kababEntityName}/route.ts`,
+  skippable: false,
+};
+const API_NEXT_SERVER_DELETE_ONE_TEMPLATE_CONFIG = {
+  name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-delete-one-template.ts.ejs`,
+  outputPath: `delete-one-{kababEntityName}/route.ts`,
+  skippable: false,
+};
+const API_NEXT_SERVER_GET_MANY_TEMPLATE_CONFIG = {
+  name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-get-many-template.ts.ejs`,
+  outputPath: `get-many-{kababEntitiesName}/route.ts`,
+  skippable: false,
+};
+const API_NEXT_SERVER_GET_ONE_TEMPLATE_CONFIG = {
+  name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-get-one-template.ts.ejs`,
+  outputPath: `get-one-{kababEntityName}/route.ts`,
+  skippable: false,
+};
+const API_NEXT_SERVER_GET_ONE_SAFE_TEMPLATE_CONFIG = {
+  name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-get-one-safe-template.ts.ejs`,
+  outputPath: `get-one-{kababEntityName}-safe/route.ts`,
+  skippable: false,
+};
+const API_NEXT_SERVER_UPDATE_ONE_TEMPLATE_CONFIG = {
+  name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-update-one-template.ts.ejs`,
+  outputPath: `update-one-{kababEntityName}/route.ts`,
+  skippable: false,
+};
+const API_NEXT_SERVER_TEMPLATE_CONFIGS = [
+  API_NEXT_SERVER_CREATE_ONE_TEMPLATE_CONFIG,
+  API_NEXT_SERVER_DELETE_ONE_TEMPLATE_CONFIG,
+  API_NEXT_SERVER_GET_MANY_TEMPLATE_CONFIG,
+  API_NEXT_SERVER_GET_ONE_TEMPLATE_CONFIG,
+  API_NEXT_SERVER_GET_ONE_SAFE_TEMPLATE_CONFIG,
+  API_NEXT_SERVER_UPDATE_ONE_TEMPLATE_CONFIG,
+];
 
 async function loadConfig() {
   const configContent = await fs.promises.readFile(CONFIG_FILE_PATH, "utf8");
@@ -68,34 +100,35 @@ async function loadConfig() {
   return { ...config, augmentors, templates };
 }
 
-function addTemplate(config, name) {
-  const { templates } = config;
-  const template = templates.find((t) => t.name === name);
+function addTemplate(config, draftTemplate) {
+  const { templates, apiNext } = config;
+  const { appPath, airentApiPath } = apiNext;
+  const airentApiOutputBasePath = path
+    .join(appPath, airentApiPath)
+    .replaceAll("\\", "/");
+  const template = templates.find((t) => t.name === draftTemplate.name);
+  const outputPath = path
+    .join(airentApiOutputBasePath, draftTemplate.outputPath)
+    .replaceAll("\\", "/");
   if (template === undefined) {
-    templates.push({ name, skippable: false });
+    templates.push({ ...draftTemplate, outputPath });
+  } else {
+    template.outputPath = outputPath;
   }
 }
 
 async function configure() {
   const config = await loadConfig();
   const { augmentors } = config;
-  const isApiNextEnabled = augmentors.includes(API_NEXT_AUGMENTOR_PATH);
-  const shouldEnableApiNext = isApiNextEnabled
+  const isAugmentorEnabled = augmentors.includes(API_NEXT_AUGMENTOR_PATH);
+  const shouldEnableApiNext = isAugmentorEnabled
     ? true
     : await getShouldEnable("Api Next");
   if (!shouldEnableApiNext) {
     return;
   }
-  if (!isApiNextEnabled) {
+  if (!isAugmentorEnabled) {
     augmentors.push(API_NEXT_AUGMENTOR_PATH);
-    [
-      API_NEXT_SERVER_CREATE_ONE_TEMPLATE_PATH,
-      API_NEXT_SERVER_DELETE_ONE_TEMPLATE_PATH,
-      API_NEXT_SERVER_GET_MANY_TEMPLATE_PATH,
-      API_NEXT_SERVER_GET_ONE_TEMPLATE_PATH,
-      API_NEXT_SERVER_GET_ONE_SAFE_TEMPLATE_PATH,
-      API_NEXT_SERVER_UPDATE_ONE_TEMPLATE_PATH,
-    ].forEach((name) => addTemplate(config, name));
   }
 
   config.apiNext.appPath = await askQuestion(
@@ -107,6 +140,8 @@ async function configure() {
     "Airent API Path",
     config.apiNext.airentApiPath ?? "/api"
   );
+
+  API_NEXT_SERVER_TEMPLATE_CONFIGS.forEach((t) => addTemplate(config, t));
 
   const isCronApiEnabled =
     config.apiNext.cronSourcePath !== undefined &&
@@ -164,10 +199,6 @@ async function configure() {
     config.apiNext.webhookApiPath = await askQuestion(
       "Webhook API Path",
       config.apiNext.webhookApiPath ?? "/api/webhooks"
-    );
-    config.apiNext.webhookHandlerOptions = await askQuestion(
-      "Webhook Handler Options",
-      config.apiNext.webhookHandlerOptions ?? ""
     );
   }
 

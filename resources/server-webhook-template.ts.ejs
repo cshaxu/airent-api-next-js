@@ -7,7 +7,4 @@ export const POST = handleWebhook({
   parser,
   validator,
   executor,
-<% if (config.apiNext.webhookHandlerOptions?.length) { -%>
-  options: <%- config.apiNext.webhookHandlerOptions %>,
-<% } -%>
 });
