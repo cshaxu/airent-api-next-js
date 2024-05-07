@@ -1,9 +1,11 @@
-import { executor } from '<%- cronPackage %>';
 import { handleCron } from '<%- apiNextPackage %>';
+
 import { handlerConfig } from '<%- handlerConfigPackage %>';
 
-<% if (maxDuration) { -%>
-export const maxDuration = <%= maxDuration %>;
+import { executor } from '<%- entry.parsed.cronPackage %>';
+
+<% if (entry.parsed.maxDuration) { -%>
+export const maxDuration = <%= entry.parsed.maxDuration %>;
 <% } -%>
 
 export const GET = handleCron({

@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "contextImportPath": "./test-resources/src/context",
   "api": {
     "server": {
@@ -16,6 +17,22 @@
     "debugApiPath": "/api/debug",
     "debugHandlerOptions": "",
     "webhookSourcePath": "./test-resources/src/webhooks",
-    "webhookApiPath": "/api/webhooks"
+    "webhookApiPath": "/api/webhooks",
+    "templates": [
+      {
+        "name": "./test-resources/airent-plugins/file-template.ts.ejs",
+        "inputType": "files",
+        "outputType": "file",
+        "inputPath": "./test-resources/src",
+        "outputPath": "./test-resources/src/plugin-generated.ts"
+      },
+      {
+        "name": "./test-resources/airent-plugins/files-template.ts.ejs",
+        "inputType": "folders",
+        "outputType": "files",
+        "inputPath": "./test-resources/src",
+        "outputPath": "./test-resources/src/plugin-generated"
+      }
+    ]
   }
 }

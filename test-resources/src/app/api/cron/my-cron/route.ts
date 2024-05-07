@@ -1,6 +1,8 @@
-import { executor } from '../../../../cron/my-cron';
-import { handleCron } from '../../../../../../src/index';
-import { handlerConfig } from '../../../../framework';
+import { handleCron } from '../../../../../../src/index.js';
+
+import { handlerConfig } from '../../../../framework.js';
+
+import { executor } from '../../../../cron/my-cron.js';
 
 export const maxDuration = 60;
 

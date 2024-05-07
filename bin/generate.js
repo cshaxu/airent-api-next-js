@@ -8,6 +8,10 @@ const path = require("path");
 
 // UTILITIES //
 
+function getModuleSuffix(config) /* string */ {
+  return config.type === "module" ? ".js" : "";
+}
+
 function toTitleCase(name) {
   return name
     .split("-")
@@ -22,7 +26,7 @@ function toCamelCase(name) {
     .join("");
 }
 
-const utils = { toTitleCase, toCamelCase };
+const utils = { getModuleSuffix, toTitleCase, toCamelCase };
 
 const getTypeScriptFileNames = (inputPath) =>
   fs.promises
@@ -40,10 +44,12 @@ const getFolderNames = (inputPath) =>
 
 const readFileContent = (inputPath) => fs.promises.readFile(inputPath, "utf-8");
 const writeFileContent = async (outputPath, fileName, content) => {
-  await fs.promises.mkdir(outputPath, { recursive: true });
+  if (!fs.existsSync(outputPath)) {
+    await fs.promises.mkdir(outputPath, { recursive: true });
+  }
   await fs.promises.writeFile(path.join(outputPath, fileName), content);
 };
-const removeFolder = (inputPath) =>
+const remove = (inputPath) =>
   fs.promises.rm(inputPath, { force: true, recursive: true });
 
 // TYPES AND CONSTANTS //
@@ -85,86 +91,216 @@ async function loadConfig(isVerbose) {
   return config;
 }
 
-function buildLibPackage(config, fromPath) {
+function buildPackage(absoluteSourcePath, targetPath, config) {
+  if (targetPath.startsWith(".")) {
+    const relativePath = path
+      .relative(absoluteSourcePath, path.join(PROJECT_PATH, targetPath))
+      .replaceAll("\\", "/");
+    return `${relativePath}${getModuleSuffix(config)}`;
+  }
+  return targetPath;
+}
+
+function buildLibPackage(absolutePath, config) {
   const { libImportPath } = config.apiNext;
   return libImportPath
-    ? libImportPath.startsWith(".")
-      ? path
-          .relative(fromPath, path.join(PROJECT_PATH, libImportPath))
-          .replaceAll("\\", "/")
-      : libImportPath
+    ? buildPackage(absolutePath, libImportPath, config)
     : "@airent/api-next";
 }
 
-function buildHandlerConfigPackage(config, absolutePath) {
-  const { handlerConfigImportPath } = config.api.server;
-  return handlerConfigImportPath.startsWith(".")
-    ? path
-        .relative(
-          absolutePath,
-          path.join(PROJECT_PATH, handlerConfigImportPath)
-        )
-        .replaceAll("\\", "/")
-    : handlerConfigImportPath;
+function buildContextPackage(absolutePath, config) {
+  return buildPackage(absolutePath, config.contextImportPath, config);
 }
 
-async function buildCronJobApis(config, isVerbose) {
-  if (isVerbose) {
-    console.log("[AIRENT-API-NEXT/INFO] Building cron job APIs...");
-  }
-
-  const cronInputPath = path.join(PROJECT_PATH, config.apiNext.cronSourcePath);
-  const cronOutputBasePath = path.join(
-    PROJECT_PATH,
-    config.apiNext.appPath,
-    config.apiNext.cronApiPath
+function buildHandlerConfigPackage(absolutePath, config) {
+  return buildPackage(
+    absolutePath,
+    config.api.server.handlerConfigImportPath,
+    config
   );
+}
 
-  // load cron job list
-  const names = await getTypeScriptFileNames(cronInputPath);
+async function generateInner(
+  templatePath,
+  inputPath,
+  outputPath,
+  inputType,
+  outputType,
+  config,
+  inputContentParser
+) {
+  const template = await readFileContent(templatePath);
+
+  const absoluteInputPath = path.join(PROJECT_PATH, inputPath);
+  const names = [];
+  if (inputType === "files") {
+    const fileNames = await getTypeScriptFileNames(absoluteInputPath);
+    names.push(...fileNames);
+  } else if (inputType === "folders") {
+    const folderNames = await getFolderNames(absoluteInputPath);
+    names.push(...folderNames);
+  } else {
+    throw new Error(
+      "[AIRENT-API-NEXT/ERROR] Invalid input type: must be 'file' or 'folder'"
+    );
+  }
   if (names.length === 0) {
     return;
   }
 
-  // load cron job content
-  const inputContents = await Promise.all(
-    names
-      .map((n) => path.join(cronInputPath, `${n}.ts`))
-      .map((p) => readFileContent(p))
-  );
-  const inputLinesList = inputContents.map((c) => c.split("\n"));
+  const parsedInputContents =
+    inputType === "files" && inputContentParser !== undefined
+      ? await Promise.all(
+          names.map(async (name) => {
+            const filePath = path.join(absoluteInputPath, `${name}.ts`);
+            const inputContent = await readFileContent(filePath);
+            return await inputContentParser(name, inputContent);
+          })
+        )
+      : undefined;
+  const entries = names.map((name, i) => ({
+    name,
+    ...(parsedInputContents && { parsed: parsedInputContents[i] }),
+  }));
 
-  // build cron job api endpoints
-  const maxDurations = inputLinesList.map((lines) =>
-    lines
-      .filter((l) => l.startsWith("export const maxDuration"))
-      .map((l) => l.split("=")[1].trim().replace(";", ""))
-      .at(0)
-  );
+  const absoluteOutputPath = path.join(PROJECT_PATH, outputPath);
 
-  const template = await readFileContent(CRON_TEMPLATE_PATH);
-
-  await removeFolder(cronOutputBasePath);
-
-  names.forEach(async (name, i) => {
-    const maxDuration = maxDurations[i];
-    const outputPath = path.join(cronOutputBasePath, name);
-    const apiNextPackage = buildLibPackage(config, outputPath);
-    const cronPath = path.relative(outputPath, cronInputPath);
-    const cronPackage = path.join(cronPath, name).replaceAll("\\", "/");
-    const handlerConfigPackage = buildHandlerConfigPackage(config, outputPath);
+  if (outputType === "file") {
+    const apiNextPackage = buildLibPackage(
+      path.dirname(absoluteOutputPath),
+      config
+    );
+    const contextPackage = buildContextPackage(
+      path.dirname(absoluteOutputPath),
+      config
+    );
+    const handlerConfigPackage = buildHandlerConfigPackage(
+      path.dirname(absoluteOutputPath),
+      config
+    );
     const data = {
       apiNextPackage,
-      cronPackage,
+      contextPackage,
       handlerConfigPackage,
-      name,
-      maxDuration,
+      entries,
       config,
+      utils,
     };
+    const content = ejs.render(template, data);
+    await writeFileContent(
+      path.dirname(absoluteOutputPath),
+      path.basename(absoluteOutputPath),
+      content
+    );
+  } else if (outputType === "files") {
+    await remove(absoluteOutputPath);
+    const apiNextPackage = buildLibPackage(absoluteOutputPath, config);
+    const contextPackage = buildContextPackage(absoluteOutputPath, config);
+    const handlerConfigPackage = buildHandlerConfigPackage(
+      absoluteOutputPath,
+      config
+    );
+    const functions = entries.map(async (entry) => {
+      const data = {
+        apiNextPackage,
+        contextPackage,
+        handlerConfigPackage,
+        entry,
+        config,
+        utils,
+      };
+      const outputContent = ejs.render(template, data);
+      await writeFileContent(
+        absoluteOutputPath,
+        `${entry.name}.ts`,
+        outputContent
+      );
+    });
+    await Promise.all(functions);
+  } else if (outputType === "routes") {
+    await remove(absoluteOutputPath);
+    const functions = entries.map(async (entry) => {
+      const absoluteOutputFolderPath = path.join(
+        absoluteOutputPath,
+        entry.name
+      );
+      const apiNextPackage = buildLibPackage(absoluteOutputFolderPath, config);
+      const contextPackage = buildContextPackage(
+        absoluteOutputFolderPath,
+        config
+      );
+      const handlerConfigPackage = buildHandlerConfigPackage(
+        absoluteOutputFolderPath,
+        config
+      );
+      const data = {
+        apiNextPackage,
+        contextPackage,
+        handlerConfigPackage,
+        entry,
+        config,
+        utils,
+      };
+      const outputContent = ejs.render(template, data);
+      await writeFileContent(
+        absoluteOutputFolderPath,
+        "route.ts",
+        outputContent
+      );
+    });
+    await Promise.all(functions);
+  } else {
+    throw new Error(
+      "[AIRENT-API-NEXT/ERROR] Invalid output type: must be 'file' or 'route'"
+    );
+  }
+  return entries;
+}
 
-    const outputContent = ejs.render(template, data);
-    await writeFileContent(outputPath, "route.ts", outputContent);
-  });
+async function buildCronJobApis(config, isVerbose) {
+  if (isVerbose) {
+    console.log("[AIRENT-API-NEXT/INFO] Building cron job APIs ...");
+  }
+
+  const inputContentParser = (name, inputContent) => {
+    const cronPackage = buildPackage(
+      path.join(
+        PROJECT_PATH,
+        config.apiNext.appPath,
+        config.apiNext.cronApiPath,
+        "placeholder"
+      ),
+      `./${path.join(config.apiNext.cronSourcePath, name)}`,
+      config
+    );
+    const inputLines = inputContent.split("\n");
+    const maxDuration = inputLines
+      .filter((l) => l.startsWith("export const maxDuration ="))
+      .map((l) => l.split("=")[1].trim().replace(";", ""))
+      .at(0);
+    const schedule = inputLines
+      .filter((l) => l.startsWith("export const schedule = "))
+      .map((l) =>
+        l
+          .split("=")[1]
+          .trim()
+          .replace(";", "")
+          .replaceAll("'", "")
+          .replaceAll('"', "")
+      )
+      .at(0);
+    return { cronPackage, maxDuration, schedule };
+  };
+
+  const entries = await generateInner(
+    CRON_TEMPLATE_PATH,
+    config.apiNext.cronSourcePath,
+    path.join(config.apiNext.appPath, config.apiNext.cronApiPath),
+    "files",
+    "routes",
+    config,
+    inputContentParser
+  );
 
   // build & save vercel.json
   const isVercelJsonExists = fs.existsSync(VERCEL_JSON_PATH);
@@ -172,109 +308,89 @@ async function buildCronJobApis(config, isVerbose) {
     ? await readFileContent(VERCEL_JSON_PATH).then((c) => c || "{}")
     : "{}";
   const vercelJson = JSON.parse(vercelJsonContent);
-  const schedules = inputLinesList.map((lines) =>
-    lines
-      .filter((l) => l.startsWith("export const schedule"))
-      .map((l) => l.split("=")[1].trim().replace(";", "").replaceAll("'", ""))
-      .at(0)
-  );
-  vercelJson.crons = names.map((n, i) => ({
-    path: `${config.apiNext.cronApiPath}/${n}`,
-    schedule: schedules[i],
+  vercelJson.crons = entries.map((entry) => ({
+    path: `${config.apiNext.cronApiPath}/${entry.name}`,
+    schedule: entry.parsed.schedule,
   }));
   const newVercelJsonContent = JSON.stringify(vercelJson, null, 2) + "\n";
   await fs.promises.writeFile(VERCEL_JSON_PATH, newVercelJsonContent);
 }
 
-async function buildDebugApi(config, isVerbose) {
+async function buildPredefinedApi(
+  name,
+  templatePath,
+  apiPath,
+  sourcePath,
+  config,
+  isVerbose
+) {
   if (isVerbose) {
-    console.log("[AIRENT-API-NEXT/INFO] Building debug API...");
+    console.log(`[AIRENT-API-NEXT/INFO] Building ${name} API endpoints ...`);
   }
 
-  const debugInputPath = path.join(
-    PROJECT_PATH,
-    config.apiNext.debugSourcePath
-  );
-  const debugOutputPath = path.join(
-    PROJECT_PATH,
-    config.apiNext.appPath,
-    config.apiNext.debugApiPath
-  );
-
-  const apiNextPackage = buildLibPackage(config, debugOutputPath);
-  const debugBasePackage = path
-    .relative(debugOutputPath, debugInputPath)
-    .replaceAll("\\", "/");
-  const contextPackage = config.contextImportPath.startsWith("@")
-    ? config.contextImportPath
-    : path
-        .relative(
-          debugOutputPath,
-          path.join(PROJECT_PATH, config.contextImportPath)
-        )
-        .replaceAll("\\", "/");
-  const handlerConfigPackage = buildHandlerConfigPackage(
-    config,
-    debugOutputPath
-  );
-
-  const names = await getTypeScriptFileNames(debugInputPath);
-  const data = {
-    apiNextPackage,
-    debugBasePackage,
-    contextPackage,
-    handlerConfigPackage,
-    names,
-    config,
-    utils,
+  const inputContentParser = (name) => {
+    const sourcePackage = buildPackage(
+      path.join(PROJECT_PATH, config.apiNext.appPath, apiPath, "placeholder"),
+      `./${path.join(sourcePath, name)}`,
+      config
+    );
+    return { sourcePackage };
   };
 
-  const template = await readFileContent(DEBUG_TEMPLATE_PATH);
-  const content = ejs.render(template, data);
-  await writeFileContent(debugOutputPath, "route.ts", content);
+  await generateInner(
+    templatePath,
+    sourcePath,
+    path.join(config.apiNext.appPath, apiPath),
+    "files",
+    "routes",
+    config,
+    inputContentParser
+  );
+}
+
+async function buildDebugApi(config, isVerbose) {
+  await buildPredefinedApi(
+    "debug",
+    DEBUG_TEMPLATE_PATH,
+    config.apiNext.debugApiPath,
+    config.apiNext.debugSourcePath,
+    config,
+    isVerbose
+  );
 }
 
 async function buildWebhookApis(config, isVerbose) {
-  if (isVerbose) {
-    console.log("[AIRENT-API-NEXT/INFO] Building webhook APIs...");
-  }
-
-  const webhookInputPath = path.join(
-    PROJECT_PATH,
-    config.apiNext.webhookSourcePath
+  await buildPredefinedApi(
+    "webhook",
+    WEBHOOK_TEMPLATE_PATH,
+    config.apiNext.webhookApiPath,
+    config.apiNext.webhookSourcePath,
+    config,
+    isVerbose
   );
-  const webhookOutputBasePath = path.join(
-    PROJECT_PATH,
-    config.apiNext.appPath,
-    config.apiNext.webhookApiPath
-  );
+}
 
-  // load webhook list
-  const names = await getTypeScriptFileNames(webhookInputPath);
-  if (names.length === 0) {
+async function buildPlugins(config, isVerbose) {
+  const { templates } = config.apiNext;
+  if (!templates?.length) {
     return;
   }
-
-  const template = await readFileContent(WEBHOOK_TEMPLATE_PATH);
-
-  await removeFolder(webhookOutputBasePath);
-
-  names.forEach(async (name) => {
-    const outputPath = path.join(webhookOutputBasePath, name);
-    const apiNextPackage = buildLibPackage(config, outputPath);
-    const webhookPath = path.relative(outputPath, webhookInputPath);
-    const webhookPackage = path.join(webhookPath, name).replaceAll("\\", "/");
-    const handlerConfigPackage = buildHandlerConfigPackage(config, outputPath);
-    const data = {
-      apiNextPackage,
-      webhookPackage,
-      handlerConfigPackage,
-      name,
-      config,
-    };
-    const content = ejs.render(template, data);
-    await writeFileContent(outputPath, "route.ts", content);
+  const functions = templates.map(async (template) => {
+    const { name, inputType, outputType, inputPath, outputPath } = template;
+    const templatePath = path.join(PROJECT_PATH, name);
+    if (isVerbose) {
+      console.log(`[AIRENT-API-NEXT/INFO] Generating with ${templatePath} ...`);
+    }
+    await generateInner(
+      templatePath,
+      inputPath,
+      outputPath,
+      inputType,
+      outputType,
+      config
+    );
   });
+  await Promise.all(functions);
 }
 
 async function generate(argv) {
@@ -286,6 +402,7 @@ async function generate(argv) {
   await buildCronJobApis(config, isVerbose);
   await buildDebugApi(config, isVerbose);
   await buildWebhookApis(config, isVerbose);
+  await buildPlugins(config, isVerbose);
 
   console.log("[AIRENT-API-NEXT/INFO] Task completed.");
 }

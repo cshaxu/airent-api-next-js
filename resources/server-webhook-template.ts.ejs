@@ -1,8 +1,10 @@
-import { handleWebhook } from '<%- apiNextPackage %>';
-import { parser, validator, executor } from '<%- webhookPackage %>';
+import { wrappableHandle } from '@airent/api';
+
 import { handlerConfig } from '<%- handlerConfigPackage %>';
 
-export const POST = handleWebhook({ 
+import { parser, validator, executor } from '<%- entry.parsed.sourcePackage %>';
+
+export const POST = wrappableHandle({ 
   ...handlerConfig,
   parser,
   validator,
