@@ -1,0 +1,9 @@
+{
+  "packages": [
+    {
+      "name": "@airent/api",
+      "scripts": ["airent-api"]
+    }
+  ],
+  "commands": ["npm install"]
+}
