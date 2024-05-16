@@ -131,6 +131,7 @@ async function configure() {
     augmentors.push(API_NEXT_AUGMENTOR_PATH);
   }
 
+  config.apiNext = config.apiNext ?? {};
   config.apiNext.appPath = await askQuestion(
     "Next.js App Path",
     config.apiNext.appPath ?? "./src/app"
