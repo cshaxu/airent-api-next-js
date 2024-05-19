@@ -1,5 +1,5 @@
+import { CommonResponse } from "@airent/utils";
 import * as z from "zod";
-import { CommonResponse } from "../../../src";
 import { Context } from "../context";
 
 const Params = z.object({});

@@ -8,7 +8,6 @@
   },
   "scripts": {
     "update": "airent-updater",
-    "build": "rm -rf ./lib && tsc -p tsconfig.json && crlf --set=LF bin/*",
     "test": "rm -rf ./test-output && node ./bin/index.js generate"
   },
   "repository": {
@@ -38,14 +37,11 @@
     "resources"
   ],
   "dependencies": {
-    "@airent/api": "github:cshaxu/airent-api-js#0a6691559718747aa1afbb9586bc0d1bdc7d6dcf",
-    "ejs": "^3.1.10",
-    "http-errors": "^2.0.0",
-    "zod": "^3.22.4"
+    "ejs": "^3.1.10"
   },
   "devDependencies": {
-    "@airent/utils": "github:cshaxu/airent-utils-js#88a44b6a027e1b8c636f7e25283e310eac9c40ed",
-    "@types/http-errors": "^2.0.4",
+    "@airent/api": "github:cshaxu/airent-api-js#102fe6cb7295adcd9342a51735e5d114542a4d77",
+    "@airent/utils": "github:cshaxu/airent-utils-js#4341312362c21dc3adbf2afeadfc900898cb5357",
     "@types/node": "^20.10.1",
     "crlf": "^1.1.1",
     "typescript": "^5.3.2"

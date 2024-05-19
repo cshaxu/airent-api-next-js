@@ -1,4 +1,4 @@
-import { CommonResponse } from "../../../src";
+import { CommonResponse } from "@airent/utils";
 import { Context } from "../context";
 
 export const maxDuration = 60;

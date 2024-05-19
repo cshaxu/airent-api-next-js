@@ -1,5 +1,6 @@
-import { handleCron } from '<%- apiNextPackage %>';
+import { wrappableHandle } from '@airent/api';
 
+import { Context } from '<%- contextPackage %>';
 import { handlerConfig } from '<%- handlerConfigPackage %>';
 
 import { executor } from '<%- entry.parsed.cronPackage %>';
@@ -8,9 +9,10 @@ import { executor } from '<%- entry.parsed.cronPackage %>';
 export const maxDuration = <%= entry.parsed.maxDuration %>;
 <% } -%>
 
-export const GET = handleCron({
+export const GET = wrappableHandle({
   ...handlerConfig,
-  executor,
+  parser: () => Promise.resolve({}),
+  executor: (_parsed: {}, context: Context) => executor(context),
 <% if (config.apiNext.cronHandlerOptions?.length) { -%>
   options: <%- config.apiNext.cronHandlerOptions %>,
 <% } -%>
