@@ -25,19 +25,23 @@ function augmentOne(entity, config, utils) {
     return;
   }
 
-  entity.api.strings.airentApiHandlerPackage = buildRelativePackage(
-    joinRelativePath(
-      config.apiNext.appPath,
-      config.apiNext.airentApiPath,
-      "placeholder"
-    ),
-    joinRelativePath(
-      config.entityPath,
-      "generated",
-      `${utils.toKababCase(entity.name)}-handlers`
-    ),
-    config
-  );
+  entity.apiNext = {
+    packages: {
+      routeHandlers: buildRelativePackage(
+        joinRelativePath(
+          config.apiNext.appPath,
+          config.apiNext.airentApiPath,
+          "placeholder"
+        ),
+        joinRelativePath(
+          config.entityPath,
+          "generated",
+          `${utils.toKababCase(entity.name)}-handlers`
+        ),
+        config
+      ),
+    },
+  };
 }
 
 function augment(data) {

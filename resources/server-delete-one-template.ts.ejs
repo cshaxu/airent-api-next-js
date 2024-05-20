@@ -1,5 +1,5 @@
 <% if (entity.api && entity.api.booleans.hasDeleteOne) { -%>
-import <%= entity.api.strings.handlersClass %> from '<%- entity.api.strings.airentApiHandlerPackage %>';
+import <%= entity.api.strings.handlersClass %> from '<%- entity.apiNext.packages.routeHandlers %>';
 
 export const POST = <%= entity.api.strings.handlersClass %>.deleteOne;
 <% } -%>
