@@ -40,8 +40,8 @@
     "ejs": "^3.1.10"
   },
   "devDependencies": {
-    "@airent/api": "github:cshaxu/airent-api-js#fc6f811f55cbcfadd1b4f8359ec638ef0592b896",
-    "@airent/utils": "github:cshaxu/airent-utils-js#4341312362c21dc3adbf2afeadfc900898cb5357",
+    "@airent/api": "github:cshaxu/airent-api-js#2d6d30a3058055e5a3d8b5bf6147fab4363d06f7",
+    "@airent/utils": "github:cshaxu/airent-utils-js#dddfb26ba3a618432ff42a65d873f4235943112a",
     "@types/node": "^20.10.1",
     "crlf": "^1.1.1",
     "typescript": "^5.3.2"
