@@ -1,7 +1,7 @@
 {
   "name": "@airent/api-next",
-  "version": "0.1.8",
-  "description": "Next.js Extension for Airent API 0.1.8",
+  "version": "0.1.9",
+  "description": "Next.js Extension for Airent API 0.1.9",
   "main": "./lib/index.js",
   "bin": {
     "airent-api-next": "./bin/index.js"
@@ -40,9 +40,9 @@
     "ejs": "^3.1.10"
   },
   "devDependencies": {
-    "@airent/api": "github:cshaxu/airent-api-js#2d6d30a3058055e5a3d8b5bf6147fab4363d06f7",
-    "@airent/utils": "github:cshaxu/airent-utils-js#dddfb26ba3a618432ff42a65d873f4235943112a",
-    "@types/node": "^20.10.1",
+    "@airent/api": "github:cshaxu/airent-api-js#81988b8e30f1a2b15f312f291ba9bd8daed3535b",
+    "@airent/utils": "github:cshaxu/airent-utils-js#5f70cfb05f5d89beced1b92cf5962afaf9ddfec1",
+    "@types/node": "^20.12.12",
     "crlf": "^1.1.1",
     "typescript": "^5.3.2"
   }

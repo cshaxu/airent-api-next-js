@@ -55,32 +55,32 @@ const API_NEXT_AUGMENTOR_PATH = `${AIRENT_API_NEXT_RESOURCES_PATH}/augmentor.js`
 
 const API_NEXT_SERVER_CREATE_ONE_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-create-one-template.ts.ejs`,
-  outputPath: `create-one-{kababEntityName}/route.ts`,
+  outputPath: `{apiNext.appPath}{apiNext.airentApiPath}/create-one-{kababEntityName}/route.ts`,
   skippable: false,
 };
 const API_NEXT_SERVER_DELETE_ONE_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-delete-one-template.ts.ejs`,
-  outputPath: `delete-one-{kababEntityName}/route.ts`,
+  outputPath: `{apiNext.appPath}{apiNext.airentApiPath}/delete-one-{kababEntityName}/route.ts`,
   skippable: false,
 };
 const API_NEXT_SERVER_GET_MANY_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-get-many-template.ts.ejs`,
-  outputPath: `get-many-{kababEntitiesName}/route.ts`,
+  outputPath: `{apiNext.appPath}{apiNext.airentApiPath}/get-many-{kababEntitiesName}/route.ts`,
   skippable: false,
 };
 const API_NEXT_SERVER_GET_ONE_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-get-one-template.ts.ejs`,
-  outputPath: `get-one-{kababEntityName}/route.ts`,
+  outputPath: `{apiNext.appPath}{apiNext.airentApiPath}/get-one-{kababEntityName}/route.ts`,
   skippable: false,
 };
 const API_NEXT_SERVER_GET_ONE_SAFE_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-get-one-safe-template.ts.ejs`,
-  outputPath: `get-one-{kababEntityName}-safe/route.ts`,
+  outputPath: `{apiNext.appPath}{apiNext.airentApiPath}/get-one-{kababEntityName}-safe/route.ts`,
   skippable: false,
 };
 const API_NEXT_SERVER_UPDATE_ONE_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-update-one-template.ts.ejs`,
-  outputPath: `update-one-{kababEntityName}/route.ts`,
+  outputPath: `{apiNext.appPath}{apiNext.airentApiPath}/update-one-{kababEntityName}/route.ts`,
   skippable: false,
 };
 const API_NEXT_SERVER_TEMPLATE_CONFIGS = [
@@ -101,19 +101,10 @@ async function loadConfig() {
 }
 
 function addTemplate(config, draftTemplate) {
-  const { templates, apiNext } = config;
-  const { appPath, airentApiPath } = apiNext;
-  const airentApiOutputBasePath = path
-    .join(appPath, airentApiPath)
-    .replaceAll("\\", "/");
+  const { templates } = config;
   const template = templates.find((t) => t.name === draftTemplate.name);
-  const outputPath = path
-    .join(airentApiOutputBasePath, draftTemplate.outputPath)
-    .replaceAll("\\", "/");
   if (template === undefined) {
-    templates.push({ ...draftTemplate, outputPath });
-  } else {
-    template.outputPath = outputPath;
+    templates.push(draftTemplate);
   }
 }
 
