@@ -399,9 +399,15 @@ async function generate(argv) {
   // load config
   const config = await loadConfig(isVerbose);
 
-  await buildCronJobApis(config, isVerbose);
-  await buildDebugApi(config, isVerbose);
-  await buildWebhookApis(config, isVerbose);
+  if (config.apiNext.cronApiPath) {
+    await buildCronJobApis(config, isVerbose);
+  }
+  if (config.apiNext.debugApiPath) {
+    await buildDebugApi(config, isVerbose);
+  }
+  if (config.apiNext.webhookApiPath) {
+    await buildWebhookApis(config, isVerbose);
+  }
   await buildPlugins(config, isVerbose);
 
   console.log("[AIRENT-API-NEXT/INFO] Task completed.");
