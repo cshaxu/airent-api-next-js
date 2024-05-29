@@ -1,8 +1,11 @@
+// airent imports
 import { wrappableHandle } from '@airent/api';
 
+// config imports
 import { Context } from '<%- contextPackage %>';
 import { handlerConfig } from '<%- handlerConfigPackage %>';
 
+// function imports
 import { executor } from '<%- entry.parsed.cronPackage %>';
 
 <% if (entry.parsed.maxDuration) { -%>
