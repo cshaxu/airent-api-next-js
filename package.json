@@ -7,7 +7,7 @@
     "airent-api-next": "./bin/index.js"
   },
   "scripts": {
-    "update": "airent-updater",
+    "update": "airdev-update",
     "test": "rm -rf ./test-output && node ./bin/index.js generate"
   },
   "repository": {
@@ -40,9 +40,9 @@
     "ejs": "^3.1.10"
   },
   "devDependencies": {
-    "@airent/api": "github:cshaxu/airent-api-js#631956dace66df25600cc76d66a9718c00cec337",
-    "@airent/utils": "github:cshaxu/airent-utils-js#3910c87fb6c858037bce0c003a4030f6565cce3b",
+    "@airent/api": "github:cshaxu/airent-api-js#66e265e36d39a9b95b9fa15f6f4666a8ab1b6d06",
     "@types/node": "^20.12.12",
+    "airdev": "github:cshaxu/airdev-js#191dc7b5b1fdff2c7a092ad7091c2774e686281b",
     "crlf": "^1.1.1",
     "typescript": "^5.3.2"
   }

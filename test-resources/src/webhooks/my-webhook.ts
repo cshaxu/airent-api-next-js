@@ -1,6 +1,6 @@
-import { CommonResponse } from "@airent/utils";
 import * as z from "zod";
 import { Context } from "../context";
+import { CommonResponse } from "../types";
 
 const Params = z.object({});
 type Params = z.infer<typeof Params>;

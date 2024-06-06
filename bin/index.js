@@ -78,6 +78,11 @@ const API_NEXT_SERVER_GET_ONE_SAFE_TEMPLATE_CONFIG = {
   outputPath: `{apiNext.appPath}{apiNext.airentApiPath}/get-one-{kababEntityName}-safe/route.ts`,
   skippable: false,
 };
+const API_NEXT_SERVER_SEARCH_TEMPLATE_CONFIG = {
+  name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-search-template.ts.ejs`,
+  outputPath: `{apiNext.appPath}{apiNext.airentApiPath}/search-{kababEntitiesName}/route.ts`,
+  skippable: false,
+};
 const API_NEXT_SERVER_UPDATE_ONE_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-update-one-template.ts.ejs`,
   outputPath: `{apiNext.appPath}{apiNext.airentApiPath}/update-one-{kababEntityName}/route.ts`,
@@ -89,6 +94,7 @@ const API_NEXT_SERVER_TEMPLATE_CONFIGS = [
   API_NEXT_SERVER_GET_MANY_TEMPLATE_CONFIG,
   API_NEXT_SERVER_GET_ONE_TEMPLATE_CONFIG,
   API_NEXT_SERVER_GET_ONE_SAFE_TEMPLATE_CONFIG,
+  API_NEXT_SERVER_SEARCH_TEMPLATE_CONFIG,
   API_NEXT_SERVER_UPDATE_ONE_TEMPLATE_CONFIG,
 ];
 
