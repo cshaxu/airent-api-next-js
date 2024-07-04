@@ -6,7 +6,7 @@ import { Context } from '<%- contextPackage %>';
 import { handlerConfig } from '<%- handlerConfigPackage %>';
 
 // function imports
-import { executor } from '<%- entry.parsed.cronPackage %>';
+import { executor } from '<%- entry.parsed.sourcePackage %>';
 
 <% if (entry.parsed.maxDuration) { -%>
 export const maxDuration = <%= entry.parsed.maxDuration %>;

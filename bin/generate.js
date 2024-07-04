@@ -263,7 +263,7 @@ async function buildCronJobApis(config, isVerbose) {
   }
 
   const inputContentParser = (name, inputContent) => {
-    const cronPackage = buildPackage(
+    const sourcePackage = buildPackage(
       path.join(
         PROJECT_PATH,
         config.apiNext.appPath,
@@ -289,7 +289,7 @@ async function buildCronJobApis(config, isVerbose) {
           .replaceAll('"', "")
       )
       .at(0);
-    return { cronPackage, maxDuration, schedule };
+    return { sourcePackage, maxDuration, schedule };
   };
 
   const entries = await generateInner(
