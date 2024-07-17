@@ -40,10 +40,10 @@
     "ejs": "^3.1.10"
   },
   "devDependencies": {
-    "@airent/api": "github:cshaxu/airent-api-js#c59e55232c22bc0dade237e2f6779feb3b14989e",
     "@types/node": "^20.12.12",
-    "airdev": "github:cshaxu/airdev-js#3eedbfba9ffdac967d772b6dae9dd79608f31d8b",
     "crlf": "^1.1.1",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "@airent/api": "github:cshaxu/airent-api-js#d691b35911bb772cee323f1d435f35034a43fffd",
+    "airdev": "github:cshaxu/airdev-js#a2bf0e7bdabfbad644f72487b3042bbad54baf65"
   }
 }
