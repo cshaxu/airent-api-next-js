@@ -1,5 +1,5 @@
 // airent imports
-import { wrappableHandle } from '@airent/api';
+import { handle } from '@airent/api';
 
 // config imports
 import { Context } from '../../../../context.js';
@@ -10,7 +10,7 @@ import { executor } from '../../../../cron/my-cron.js';
 
 export const maxDuration = 60;
 
-export const GET = wrappableHandle({
+export const GET = handle({
   ...handlerConfig,
   parser: () => Promise.resolve({}),
   executor: (_parsed: {}, context: Context) => executor(context),

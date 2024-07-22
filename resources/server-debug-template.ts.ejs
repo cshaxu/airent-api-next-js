@@ -1,5 +1,5 @@
 // airent imports
-import { wrappableHandle } from '@airent/api';
+import { handle } from '@airent/api';
 
 // config imports
 import { handlerConfig } from '<%- handlerConfigPackage %>';
@@ -7,7 +7,7 @@ import { handlerConfig } from '<%- handlerConfigPackage %>';
 // function imports
 import { parser, executor } from '<%- entry.parsed.sourcePackage %>';
 
-export const POST = wrappableHandle({
+export const POST = handle({
   ...handlerConfig,
   parser,
   executor,
