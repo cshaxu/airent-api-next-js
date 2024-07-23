@@ -25,6 +25,7 @@ async function getShouldEnable(name) {
  *  @property {?string} libImportPath
  *  @property {string} appPath
  *  @property {string} airentApiPath
+ *  @property {string} serverClientPath
  *  @property {?string} cronSourcePath
  *  @property {?string} cronApiPath
  *  @property {?string} cronHandlerOptions
@@ -53,6 +54,11 @@ const AIRENT_API_NEXT_RESOURCES_PATH =
 
 const API_NEXT_AUGMENTOR_PATH = `${AIRENT_API_NEXT_RESOURCES_PATH}/augmentor.js`;
 
+const API_NEXT_SERVER_CLIENT_TEMPLATE_CONFIG = {
+  name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-client-template.ts.ejs`,
+  outputPath: `{apiNext.serverClientPath}/{kababEntityName}.ts`,
+  skippable: false,
+};
 const API_NEXT_SERVER_CREATE_ONE_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-create-one-template.ts.ejs`,
   outputPath: `{apiNext.appPath}{apiNext.airentApiPath}/create-one-{kababEntityName}/route.ts`,
@@ -88,7 +94,9 @@ const API_NEXT_SERVER_UPDATE_ONE_TEMPLATE_CONFIG = {
   outputPath: `{apiNext.appPath}{apiNext.airentApiPath}/update-one-{kababEntityName}/route.ts`,
   skippable: false,
 };
+
 const API_NEXT_SERVER_TEMPLATE_CONFIGS = [
+  API_NEXT_SERVER_CLIENT_TEMPLATE_CONFIG,
   API_NEXT_SERVER_CREATE_ONE_TEMPLATE_CONFIG,
   API_NEXT_SERVER_DELETE_ONE_TEMPLATE_CONFIG,
   API_NEXT_SERVER_GET_MANY_TEMPLATE_CONFIG,
@@ -129,6 +137,7 @@ async function configure() {
   }
 
   config.apiNext = config.apiNext ?? {};
+
   config.apiNext.appPath = await askQuestion(
     "Next.js App Path",
     config.apiNext.appPath ?? "./src/app"
@@ -137,6 +146,11 @@ async function configure() {
   config.apiNext.airentApiPath = await askQuestion(
     "Airent API Path",
     config.apiNext.airentApiPath ?? "/api"
+  );
+
+  config.apiNext.serverClientPath = await askQuestion(
+    "Server-side Api Client Path",
+    config.apiNext.serverClientPath ?? "./src/server-clients"
   );
 
   API_NEXT_SERVER_TEMPLATE_CONFIGS.forEach((t) => addTemplate(config, t));

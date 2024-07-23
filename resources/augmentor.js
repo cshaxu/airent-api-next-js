@@ -27,6 +27,32 @@ function augmentOne(entity, config, utils) {
 
   entity.apiNext = {
     packages: {
+      serverClientType: buildRelativePackage(
+        joinRelativePath(config.apiNext.serverClientPath),
+        joinRelativePath(
+          config.entityPath,
+          "generated",
+          `${utils.toKababCase(entity.name)}-type`
+        ),
+        config
+      ),
+      serverClientHandlers: buildRelativePackage(
+        joinRelativePath(config.apiNext.serverClientPath),
+        joinRelativePath(
+          config.entityPath,
+          "generated",
+          `${utils.toKababCase(entity.name)}-handlers`
+        ),
+        config
+      ),
+      serverClientClientClient: buildRelativePackage(
+        joinRelativePath(config.apiNext.serverClientPath),
+        joinRelativePath(
+          config.api.client.clientPath,
+          utils.toKababCase(entity.name)
+        ),
+        config
+      ),
       routeHandlers: buildRelativePackage(
         joinRelativePath(
           config.apiNext.appPath,
