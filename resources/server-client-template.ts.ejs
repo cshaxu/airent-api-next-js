@@ -2,6 +2,9 @@
 // library imports
 import { headers } from 'next/headers';
 
+// airent imports
+import { getJsonOrThrow } from '<%- config.api.client.clientLibPackage %>';
+
 // config imports
 <%- config.api.client.baseUrlImport %>
 
@@ -70,7 +73,7 @@ async function search<S extends <%= entity.strings.fieldRequestClass %>>(
   const data = { query: withDecoded(query), fieldRequest };
   const request = buildRequest('<%= `search-${utils.pluralize(utils.toKababCase(entity.name))}` %>', data, options);
   const response = await <%= utils.toTitleCase(entity.name) %>Handlers.search(request);
-  const json = await response.json();
+  const json = await getJsonOrThrow(response);
   return <%= entity.api.strings.apiClientClass %>.presentManyResponse(json, fieldRequest);
 }
   <%_ } -%>
@@ -84,7 +87,7 @@ async function getMany<S extends <%= entity.strings.fieldRequestClass %>>(
   const data = { query: withDecoded(query), fieldRequest };
   const request = buildRequest('<%= `get-many-${utils.pluralize(utils.toKababCase(entity.name))}` %>', data, options);
   const response = await <%= utils.toTitleCase(entity.name) %>Handlers.getMany(request);
-  const json = await response.json();
+  const json = await getJsonOrThrow(response);
   return <%= entity.api.strings.apiClientClass %>.presentManyResponse(json, fieldRequest);
 }
   <%_ } -%>
@@ -98,7 +101,7 @@ async function getOne<S extends <%= entity.strings.fieldRequestClass %>>(
   const data = { params: withDecoded(params), fieldRequest };
   const request = buildRequest('<%= `get-one-${utils.toKababCase(entity.name)}` %>', data, options);
   const response = await <%= utils.toTitleCase(entity.name) %>Handlers.getOne(request);
-  const json = await response.json();
+  const json = await getJsonOrThrow(response);
   return <%= entity.api.strings.apiClientClass %>.presentOneResponse(json, fieldRequest);
 }
   <%_ } -%>
@@ -112,7 +115,7 @@ async function getOneSafe<S extends <%= entity.strings.fieldRequestClass %>>(
   const data = { params: withDecoded(params), fieldRequest };
   const request = buildRequest('<%= `get-one-${utils.toKababCase(entity.name)}-safe` %>', data, options);
   const response = await <%= utils.toTitleCase(entity.name) %>Handlers.getOneSafe(request);
-  const json = await response.json();
+  const json = await getJsonOrThrow(response);
   return <%= entity.api.strings.apiClientClass %>.presentOneSafeResponse(json, fieldRequest);
 }
   <%_ } -%>
@@ -126,7 +129,7 @@ async function createOne<S extends <%= entity.strings.fieldRequestClass %>>(
   const data = { body, fieldRequest };
   const request = buildRequest('<%= `create-one-${utils.toKababCase(entity.name)}` %>', data, options);
   const response = await <%= utils.toTitleCase(entity.name) %>Handlers.createOne(request);
-  const json = await response.json();
+  const json = await getJsonOrThrow(response);
   return <%= entity.api.strings.apiClientClass %>.presentOneResponse(json, fieldRequest);
 }
   <%_ } -%>
@@ -141,7 +144,7 @@ async function updateOne<S extends <%= entity.strings.fieldRequestClass %>>(
   const data = { params: withDecoded(params), body, fieldRequest };
   const request = buildRequest('<%= `update-one-${utils.toKababCase(entity.name)}` %>', data, options);
   const response = await <%= utils.toTitleCase(entity.name) %>Handlers.updateOne(request);
-  const json = await response.json();
+  const json = await getJsonOrThrow(response);
   return <%= entity.api.strings.apiClientClass %>.presentOneResponse(json, fieldRequest);
 }
   <%_ } -%>
@@ -155,7 +158,7 @@ async function deleteOne<S extends <%= entity.strings.fieldRequestClass %>>(
   const data = { params: withDecoded(params), fieldRequest };
   const request = buildRequest('<%= `delete-one-${utils.toKababCase(entity.name)}` %>', data, options);
   const response = await <%= utils.toTitleCase(entity.name) %>Handlers.deleteOne(request);
-  const json = await response.json();
+  const json = await getJsonOrThrow(response);
   return <%= entity.api.strings.apiClientClass %>.presentOneResponse(json, fieldRequest);
 }
   <%_ } -%>

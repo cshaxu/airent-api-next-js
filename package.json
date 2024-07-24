@@ -43,7 +43,7 @@
     "@types/node": "^20.12.12",
     "crlf": "^1.1.1",
     "typescript": "^5.3.2",
-    "@airent/api": "github:cshaxu/airent-api-js#7463bbf82db71467267676754d732579c2a64b16",
+    "@airent/api": "github:cshaxu/airent-api-js#470253c59c78ad0ed74450aa295dbd6aa43c28c8",
     "airdev": "github:cshaxu/airdev-js#a2bf0e7bdabfbad644f72487b3042bbad54baf65"
   }
 }
