@@ -1,6 +1,6 @@
 <% if (entity.api && entity.api.booleans.hasGetOneSafe) { -%>
 // entity imports
-import <%= entity.api.strings.handlersClass %> from '<%- entity.apiNext.packages.routeHandlers %>';
+import <%= `${utils.toTitleCase(entity.name)}Handler` %> from '<%- entity.apiNext.packages.routeHandler %>';
 
-export const POST = <%= entity.api.strings.handlersClass %>.getOneSafe;
+export const POST = <%= `${utils.toTitleCase(entity.name)}Handler` %>.getOneSafe;
 <% } -%>

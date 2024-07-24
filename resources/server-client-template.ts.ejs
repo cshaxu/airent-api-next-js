@@ -18,7 +18,7 @@ import {
   <%= entity.api.strings.oneResponse %>,
   <%_ } -%>
 } from '<%- entity.apiNext.packages.serverClientType %>';
-import <%= `${utils.toTitleCase(entity.name)}Handlers` %> from '<%- entity.apiNext.packages.serverClientHandlers %>';
+import <%= `${utils.toTitleCase(entity.name)}Handler` %> from '<%- entity.apiNext.packages.serverClientHandler %>';
 import {
   <%_ if (entity.api.booleans.hasSearch) { -%>
   <%= entity.api.strings.searchQuery %>,
@@ -72,7 +72,7 @@ async function search<S extends <%= entity.strings.fieldRequestClass %>>(
 ): Promise<<%= entity.api.strings.manyResponse %><S>> {
   const data = { query: withDecoded(query), fieldRequest };
   const request = buildRequest('<%= `search-${utils.pluralize(utils.toKababCase(entity.name))}` %>', data, options);
-  const response = await <%= utils.toTitleCase(entity.name) %>Handlers.search(request);
+  const response = await <%= utils.toTitleCase(entity.name) %>Handler.search(request);
   const json = await getJsonOrThrow(response);
   return <%= entity.api.strings.apiClientClass %>.presentManyResponse(json, fieldRequest);
 }
@@ -86,7 +86,7 @@ async function getMany<S extends <%= entity.strings.fieldRequestClass %>>(
 ): Promise<<%= entity.api.strings.manyResponse %><S>> {
   const data = { query: withDecoded(query), fieldRequest };
   const request = buildRequest('<%= `get-many-${utils.pluralize(utils.toKababCase(entity.name))}` %>', data, options);
-  const response = await <%= utils.toTitleCase(entity.name) %>Handlers.getMany(request);
+  const response = await <%= utils.toTitleCase(entity.name) %>Handler.getMany(request);
   const json = await getJsonOrThrow(response);
   return <%= entity.api.strings.apiClientClass %>.presentManyResponse(json, fieldRequest);
 }
@@ -100,7 +100,7 @@ async function getOne<S extends <%= entity.strings.fieldRequestClass %>>(
 ): Promise<<%= entity.api.strings.oneResponse %><S>> {
   const data = { params: withDecoded(params), fieldRequest };
   const request = buildRequest('<%= `get-one-${utils.toKababCase(entity.name)}` %>', data, options);
-  const response = await <%= utils.toTitleCase(entity.name) %>Handlers.getOne(request);
+  const response = await <%= utils.toTitleCase(entity.name) %>Handler.getOne(request);
   const json = await getJsonOrThrow(response);
   return <%= entity.api.strings.apiClientClass %>.presentOneResponse(json, fieldRequest);
 }
@@ -114,7 +114,7 @@ async function getOneSafe<S extends <%= entity.strings.fieldRequestClass %>>(
 ): Promise<<%= entity.api.strings.oneResponse %><S, true>> {
   const data = { params: withDecoded(params), fieldRequest };
   const request = buildRequest('<%= `get-one-${utils.toKababCase(entity.name)}-safe` %>', data, options);
-  const response = await <%= utils.toTitleCase(entity.name) %>Handlers.getOneSafe(request);
+  const response = await <%= utils.toTitleCase(entity.name) %>Handler.getOneSafe(request);
   const json = await getJsonOrThrow(response);
   return <%= entity.api.strings.apiClientClass %>.presentOneSafeResponse(json, fieldRequest);
 }
@@ -128,7 +128,7 @@ async function createOne<S extends <%= entity.strings.fieldRequestClass %>>(
 ): Promise<<%= entity.api.strings.oneResponse %><S>> {
   const data = { body, fieldRequest };
   const request = buildRequest('<%= `create-one-${utils.toKababCase(entity.name)}` %>', data, options);
-  const response = await <%= utils.toTitleCase(entity.name) %>Handlers.createOne(request);
+  const response = await <%= utils.toTitleCase(entity.name) %>Handler.createOne(request);
   const json = await getJsonOrThrow(response);
   return <%= entity.api.strings.apiClientClass %>.presentOneResponse(json, fieldRequest);
 }
@@ -143,7 +143,7 @@ async function updateOne<S extends <%= entity.strings.fieldRequestClass %>>(
 ): Promise<<%= entity.api.strings.oneResponse %><S>> {
   const data = { params: withDecoded(params), body, fieldRequest };
   const request = buildRequest('<%= `update-one-${utils.toKababCase(entity.name)}` %>', data, options);
-  const response = await <%= utils.toTitleCase(entity.name) %>Handlers.updateOne(request);
+  const response = await <%= utils.toTitleCase(entity.name) %>Handler.updateOne(request);
   const json = await getJsonOrThrow(response);
   return <%= entity.api.strings.apiClientClass %>.presentOneResponse(json, fieldRequest);
 }
@@ -157,7 +157,7 @@ async function deleteOne<S extends <%= entity.strings.fieldRequestClass %>>(
 ): Promise<<%= entity.api.strings.oneResponse %><S>> {
   const data = { params: withDecoded(params), fieldRequest };
   const request = buildRequest('<%= `delete-one-${utils.toKababCase(entity.name)}` %>', data, options);
-  const response = await <%= utils.toTitleCase(entity.name) %>Handlers.deleteOne(request);
+  const response = await <%= utils.toTitleCase(entity.name) %>Handler.deleteOne(request);
   const json = await getJsonOrThrow(response);
   return <%= entity.api.strings.apiClientClass %>.presentOneResponse(json, fieldRequest);
 }

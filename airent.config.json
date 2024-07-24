@@ -3,13 +3,14 @@
   "contextImportPath": "./test-resources/src/context",
   "api": {
     "server": {
-      "handlerConfigImportPath": "./test-resources/src/framework"
+      "dispatcherConfigImportPath": "./test-resources/src/framework"
     }
   },
   "apiNext": {
     "libImportPath": "./src/index",
     "appPath": "./test-resources/src/app",
     "airentApiPath": "/api/airent",
+    "handlerConfigImportPath": "./test-resources/src/framework",
     "cronSourcePath": "./test-resources/src/cron",
     "cronApiPath": "/api/cron",
     "cronHandlerOptions": "{}",

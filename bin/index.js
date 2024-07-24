@@ -25,6 +25,7 @@ async function getShouldEnable(name) {
  *  @property {?string} libImportPath
  *  @property {string} appPath
  *  @property {string} airentApiPath
+ *  @property {string} handlerConfigImportPath
  *  @property {string} serverClientPath
  *  @property {?string} cronSourcePath
  *  @property {?string} cronApiPath
@@ -57,6 +58,11 @@ const API_NEXT_AUGMENTOR_PATH = `${AIRENT_API_NEXT_RESOURCES_PATH}/augmentor.js`
 const API_NEXT_SERVER_CLIENT_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-client-template.ts.ejs`,
   outputPath: `{apiNext.serverClientPath}/{kababEntityName}.ts`,
+  skippable: false,
+};
+const API_NEXT_SERVER_HANDLER_TEMPLATE_CONFIG = {
+  name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-handler-template.ts.ejs`,
+  outputPath: "{entityPath}/generated/{kababEntityName}-handler.ts",
   skippable: false,
 };
 const API_NEXT_SERVER_CREATE_ONE_TEMPLATE_CONFIG = {
@@ -97,6 +103,7 @@ const API_NEXT_SERVER_UPDATE_ONE_TEMPLATE_CONFIG = {
 
 const API_NEXT_SERVER_TEMPLATE_CONFIGS = [
   API_NEXT_SERVER_CLIENT_TEMPLATE_CONFIG,
+  API_NEXT_SERVER_HANDLER_TEMPLATE_CONFIG,
   API_NEXT_SERVER_CREATE_ONE_TEMPLATE_CONFIG,
   API_NEXT_SERVER_DELETE_ONE_TEMPLATE_CONFIG,
   API_NEXT_SERVER_GET_MANY_TEMPLATE_CONFIG,
@@ -135,6 +142,7 @@ async function configure() {
   if (!isAugmentorEnabled) {
     augmentors.push(API_NEXT_AUGMENTOR_PATH);
   }
+  API_NEXT_SERVER_TEMPLATE_CONFIGS.forEach((t) => addTemplate(config, t));
 
   config.apiNext = config.apiNext ?? {};
 
@@ -153,7 +161,10 @@ async function configure() {
     config.apiNext.serverClientPath ?? "./src/server-clients"
   );
 
-  API_NEXT_SERVER_TEMPLATE_CONFIGS.forEach((t) => addTemplate(config, t));
+  config.apiNext.handlerConfigImportPath = await askQuestion(
+    'Import path for "handlerConfig"',
+    config.apiNext.handlerConfigImportPath ?? "./src/framework"
+  );
 
   const isCronApiEnabled =
     config.apiNext.cronSourcePath !== undefined &&
@@ -224,7 +235,6 @@ async function main(args) {
     if (!fs.existsSync(CONFIG_FILE_PATH)) {
       throw new Error('[AIRENT-API-NEXT/ERROR] "airent.config.json" not found');
     }
-
     if (args.includes("generate")) {
       const { generate } = require("./generate");
       await generate(args);

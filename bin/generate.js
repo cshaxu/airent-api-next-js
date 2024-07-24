@@ -115,7 +115,15 @@ function buildContextPackage(absolutePath, config) {
 function buildHandlerConfigPackage(absolutePath, config) {
   return buildPackage(
     absolutePath,
-    config.api.server.handlerConfigImportPath,
+    config.apiNext.handlerConfigImportPath,
+    config
+  );
+}
+
+function buildDispatcherConfigPackage(absolutePath, config) {
+  return buildPackage(
+    absolutePath,
+    config.api.server.dispatcherConfigImportPath,
     config
   );
 }
@@ -178,10 +186,15 @@ async function generateInner(
       path.dirname(absoluteOutputPath),
       config
     );
+    const dispatcherConfigPackage = buildDispatcherConfigPackage(
+      path.dirname(absoluteOutputPath),
+      config
+    );
     const data = {
       apiNextPackage,
       contextPackage,
       handlerConfigPackage,
+      dispatcherConfigPackage,
       entries,
       config,
       utils,
@@ -200,11 +213,16 @@ async function generateInner(
       absoluteOutputPath,
       config
     );
+    const dispatcherConfigPackage = buildDispatcherConfigPackage(
+      absoluteOutputPath,
+      config
+    );
     const functions = entries.map(async (entry) => {
       const data = {
         apiNextPackage,
         contextPackage,
         handlerConfigPackage,
+        dispatcherConfigPackage,
         entry,
         config,
         utils,
@@ -233,10 +251,15 @@ async function generateInner(
         absoluteOutputFolderPath,
         config
       );
+      const dispatcherConfigPackage = buildDispatcherConfigPackage(
+        absoluteOutputFolderPath,
+        config
+      );
       const data = {
         apiNextPackage,
         contextPackage,
         handlerConfigPackage,
+        dispatcherConfigPackage,
         entry,
         config,
         utils,

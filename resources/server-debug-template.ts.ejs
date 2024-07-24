@@ -1,17 +1,21 @@
 // airent imports
-import { handle } from '@airent/api';
+import { dispatchWith } from '@airent/api';
+import { handleWith } from '<%- apiNextPackage %>';
 
 // config imports
+import { dispatcherConfig } from '<%- dispatcherConfigPackage %>';
 import { handlerConfig } from '<%- handlerConfigPackage %>';
 
 // function imports
 import { parser, executor } from '<%- entry.parsed.sourcePackage %>';
 
-export const POST = handle({
-  ...handlerConfig,
+const dispatcher = dispatchWith({
+  ...dispatcherConfig,
   parser,
   executor,
 <% if (config.apiNext.debugHandlerOptions?.length) { -%>
   options: <%- config.apiNext.debugHandlerOptions %>,
 <% } -%>
 });
+
+export const POST = handleWith(dispatcher, handlerConfig);

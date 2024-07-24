@@ -1,11 +1,17 @@
 import { Context } from "./context";
 
-export const handlerConfig = { authenticator, validator };
+export const dispatcherConfig = {};
+
+export const handlerConfig = { authenticator, requestParser, errorHandler };
 
 function authenticator(_request: Request): Context {
   return {};
 }
 
-function validator(_parsed: any, _context: Context, _options?: {}): void {
-  return;
+function requestParser(request: Request): Request {
+  return request;
+}
+
+function errorHandler(error: any, _: any): any {
+  return error;
 }
