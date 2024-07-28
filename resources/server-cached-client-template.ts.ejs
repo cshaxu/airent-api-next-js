@@ -1,13 +1,17 @@
+<%
+function getCamelCasedEntitiesName() {
+  return utils.pluralize(utils.toCamelCase(entity.name));
+}
+-%>
 <% if (entity.api.booleans.hasAny) { -%>
 // library imports
-import { headers } from 'next/headers';
+import { unstable_cache } from 'next/cache';
 
 // airent imports
-import { withDecoded, respond } from '<%- config.apiNext.serverClientLibPackage %>';
+import { NextCacheOptions, withDecoded, respond } from '<%- config.apiNext.serverClientLibPackage %>';
 
 // config imports
-<%- config.api.client.baseUrlImport %>
-import { handlerConfig } from '<%- config.apiNext.serverClientHandlerConfigPackage %>';
+import { Context } from '<%- config.apiNext.serverClientContextPackage %>';
 
 // entity imports
 import {
@@ -37,78 +41,99 @@ import {
   <%= entity.api.strings.updateOneBody %>,
   <%_ } -%>
 } from '<%= entity.api.request.import %>';
-
-function buildRequest(
-  name: string,
-  data: any,
-): Request {
-  const input = `${baseUrl}/${name}`;
-  const init = {
-    credentials: 'include' as RequestCredentials,
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: headers(),
-  };
-  return new Request(input, init);
-}
   <%_ if (entity.api.booleans.hasSearch) { -%>
 
 async function search<S extends <%= entity.strings.fieldRequestClass %>>(
   query: <%= entity.api.strings.searchQuery %>,
-  fieldRequest: S
+  fieldRequest: S,
+  context: Context,
+  options?: NextCacheOptions
 ): Promise<<%= entity.api.strings.manyResponse %><S>> {
   const data = { query: withDecoded(query), fieldRequest };
-  const request = buildRequest('<%= `search-${utils.pluralize(utils.toKababCase(entity.name))}` %>', data);
-  const context = await handlerConfig.authenticator(request);
-  return await <%= entity.api.strings.dispatcherClass %>.search(data, context).then(respond);
+  const cacheKey = [
+    '<%= utils.pluralize(utils.toCamelCase(entity.name)) %>',
+    'search',
+    JSON.stringify(data),
+    JSON.stringify(context),
+  ];
+  const callback = () => <%= entity.api.strings.dispatcherClass %>.search(data, context).then(respond);
+  return await unstable_cache(callback, cacheKey, options)();
 }
   <%_ } -%>
   <%_ if (entity.api.booleans.hasGetMany) { -%>
 
 async function getMany<S extends <%= entity.strings.fieldRequestClass %>>(
   query: <%= entity.api.strings.getManyQuery %>,
-  fieldRequest: S
+  fieldRequest: S,
+  context: Context,
+  options?: NextCacheOptions
 ): Promise<<%= entity.api.strings.manyResponse %><S>> {
   const data = { query: withDecoded(query), fieldRequest };
-  const request = buildRequest('<%= `get-many-${utils.pluralize(utils.toKababCase(entity.name))}` %>', data);
-  const context = await handlerConfig.authenticator(request);
-  return await <%= entity.api.strings.dispatcherClass %>.getMany(data, context).then(respond);
+  const cacheKey = [
+    '<%= getCamelCasedEntitiesName() %>',
+    'getMany',
+    JSON.stringify(data),
+    JSON.stringify(context),
+  ];
+  const callback = () => <%= entity.api.strings.dispatcherClass %>.getMany(data, context).then(respond);
+  return await unstable_cache(callback, cacheKey, options)();
 }
   <%_ } -%>
   <%_ if (entity.api.booleans.hasGetOne) { -%>
 
 async function getOne<S extends <%= entity.strings.fieldRequestClass %>>(
   params: <%= entity.api.strings.getOneParams %>,
-  fieldRequest: S
+  fieldRequest: S,
+  context: Context,
+  options?: NextCacheOptions
 ): Promise<<%= entity.api.strings.oneResponse %><S>> {
   const data = { params: withDecoded(params), fieldRequest };
-  const request = buildRequest('<%= `get-one-${utils.toKababCase(entity.name)}` %>', data);
-  const context = await handlerConfig.authenticator(request);
-  return await <%= entity.api.strings.dispatcherClass %>.getOne(data, context).then(respond);
+  const cacheKey = [
+    '<%= getCamelCasedEntitiesName() %>',
+    'getOne',
+    JSON.stringify(data),
+    JSON.stringify(context),
+  ];
+  const callback = () => <%= entity.api.strings.dispatcherClass %>.getOne(data, context).then(respond);
+  return await unstable_cache(callback, cacheKey, options)();
 }
   <%_ } -%>
   <%_ if (entity.api.booleans.hasGetOneSafe) { -%>
 
 async function getOneSafe<S extends <%= entity.strings.fieldRequestClass %>>(
   params: <%= entity.api.strings.getOneParams %>,
-  fieldRequest: S
+  fieldRequest: S,
+  context: Context,
+  options?: NextCacheOptions
 ): Promise<<%= entity.api.strings.oneResponse %><S, true>> {
   const data = { params: withDecoded(params), fieldRequest };
-  const request = buildRequest('<%= `get-one-${utils.toKababCase(entity.name)}-safe` %>', data);
-  const context = await handlerConfig.authenticator(request);
-  return await <%= entity.api.strings.dispatcherClass %>.getOneSafe(data, context).then(respond);
+  const cacheKey = [
+    '<%= getCamelCasedEntitiesName() %>',
+    'getOneSafe',
+    JSON.stringify(data),
+    JSON.stringify(context),
+  ];
+  const callback = () => <%= entity.api.strings.dispatcherClass %>.getOneSafe(data, context).then(respond);
+  return await unstable_cache(callback, cacheKey, options)();
 }
   <%_ } -%>
   <%_ if (entity.api.booleans.hasCreateOne) { -%>
 
 async function createOne<S extends <%= entity.strings.fieldRequestClass %>>(
   body: <%= entity.api.strings.createOneBody %>,
-  fieldRequest: S
+  fieldRequest: S,
+  context: Context,
+  options?: NextCacheOptions
 ): Promise<<%= entity.api.strings.oneResponse %><S>> {
   const data = { body, fieldRequest };
-  const request = buildRequest('<%= `create-one-${utils.toKababCase(entity.name)}` %>', data);
-  const context = await handlerConfig.authenticator(request);
-  return await <%= entity.api.strings.dispatcherClass %>.createOne(data, context).then(respond);
+  const cacheKey = [
+    '<%= getCamelCasedEntitiesName() %>',
+    'createOne',
+    JSON.stringify(data),
+    JSON.stringify(context),
+  ];
+  const callback = () => <%= entity.api.strings.dispatcherClass %>.createOne(data, context).then(respond);
+  return await unstable_cache(callback, cacheKey, options)();
 }
   <%_ } -%>
   <%_ if (entity.api.booleans.hasUpdateOne) { -%>
@@ -116,12 +141,19 @@ async function createOne<S extends <%= entity.strings.fieldRequestClass %>>(
 async function updateOne<S extends <%= entity.strings.fieldRequestClass %>>(
   params: <%= entity.api.strings.getOneParams %>,
   body: <%= entity.api.strings.updateOneBody %>,
-  fieldRequest: S
+  fieldRequest: S,
+  context: Context,
+  options?: NextCacheOptions
 ): Promise<<%= entity.api.strings.oneResponse %><S>> {
   const data = { params: withDecoded(params), body, fieldRequest };
-  const request = buildRequest('<%= `update-one-${utils.toKababCase(entity.name)}` %>', data);
-  const context = await handlerConfig.authenticator(request);
-  return await <%= entity.api.strings.dispatcherClass %>.updateOne(data, context).then(respond);
+  const cacheKey = [
+    '<%= getCamelCasedEntitiesName() %>',
+    'updateOne',
+    JSON.stringify(data),
+    JSON.stringify(context),
+  ];
+  const callback = () => <%= entity.api.strings.dispatcherClass %>.updateOne(data, context).then(respond);
+  return await unstable_cache(callback, cacheKey, options)();
 }
   <%_ } -%>
   <%_ if (entity.api.booleans.hasDeleteOne) { -%>
@@ -129,18 +161,25 @@ async function updateOne<S extends <%= entity.strings.fieldRequestClass %>>(
 async function deleteOne<S extends <%= entity.strings.fieldRequestClass %>>(
   params: <%= entity.api.strings.getOneParams %>,
   fieldRequest: S,
+  context: Context,
+  options?: NextCacheOptions
 ): Promise<<%= entity.api.strings.oneResponse %><S>> {
   const data = { params: withDecoded(params), fieldRequest };
-  const request = buildRequest('<%= `delete-one-${utils.toKababCase(entity.name)}` %>', data);
-  const context = await handlerConfig.authenticator(request);
-  return await <%= entity.api.strings.dispatcherClass %>.deleteOne(data, context).then(respond);
+  const cacheKey = [
+    '<%= getCamelCasedEntitiesName() %>',
+    'deleteOne',
+    JSON.stringify(data),
+    JSON.stringify(context),
+  ];
+  const callback = () => <%= entity.api.strings.dispatcherClass %>.deleteOne(data, context).then(respond);
+  return await unstable_cache(callback, cacheKey, options)();
 }
   <%_ } -%>
 
   <%_ if (entity.deprecated) { -%>
 /** @deprecated */
   <%_ } -%>
-const <%= `${utils.toTitleCase(entity.name)}ServerApiClient` %> = {
+const <%= `${utils.toTitleCase(entity.name)}CachedServerApiClient` %> = {
   <%_ if (entity.api.booleans.hasSearch) { -%>
   search,
   <%_ } -%>
@@ -164,5 +203,5 @@ const <%= `${utils.toTitleCase(entity.name)}ServerApiClient` %> = {
   <%_ } -%>
 };
 
-export default <%= `${utils.toTitleCase(entity.name)}ServerApiClient` %>;
+export default <%= `${utils.toTitleCase(entity.name)}CachedServerApiClient` %>;
 <% } -%>

@@ -55,6 +55,11 @@ const AIRENT_API_NEXT_RESOURCES_PATH =
 
 const API_NEXT_AUGMENTOR_PATH = `${AIRENT_API_NEXT_RESOURCES_PATH}/augmentor.js`;
 
+const API_NEXT_SERVER_CACHED_CLIENT_TEMPLATE_CONFIG = {
+  name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-cached_client-template.ts.ejs`,
+  outputPath: `{apiNext.serverClientPath}/{kababEntityName}-cached.ts`,
+  skippable: false,
+};
 const API_NEXT_SERVER_CLIENT_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-client-template.ts.ejs`,
   outputPath: `{apiNext.serverClientPath}/{kababEntityName}.ts`,
@@ -102,6 +107,7 @@ const API_NEXT_SERVER_UPDATE_ONE_TEMPLATE_CONFIG = {
 };
 
 const API_NEXT_SERVER_TEMPLATE_CONFIGS = [
+  API_NEXT_SERVER_CACHED_CLIENT_TEMPLATE_CONFIG,
   API_NEXT_SERVER_CLIENT_TEMPLATE_CONFIG,
   API_NEXT_SERVER_HANDLER_TEMPLATE_CONFIG,
   API_NEXT_SERVER_CREATE_ONE_TEMPLATE_CONFIG,

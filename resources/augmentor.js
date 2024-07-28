@@ -28,9 +28,26 @@ function augmentConfig(config) {
         config
       )
     : "@airent/api-next";
+  config.apiNext.serverClientLibPackage = config.apiNext.libImportPath
+    ? buildRelativePackage(
+        joinRelativePath(config.apiNext.serverClientPath),
+        config.apiNext.libImportPath,
+        config
+      )
+    : "@airent/api-next";
   config.apiNext.handlerConfigPackage = buildRelativePackage(
     joinRelativePath(config.entityPath, "generated"),
     config.apiNext.handlerConfigImportPath,
+    config
+  );
+  config.apiNext.serverClientHandlerConfigPackage = buildRelativePackage(
+    joinRelativePath(config.apiNext.serverClientPath),
+    config.apiNext.handlerConfigImportPath,
+    config
+  );
+  config.apiNext.serverClientContextPackage = buildRelativePackage(
+    joinRelativePath(config.apiNext.serverClientPath),
+    config.contextImportPath,
     config
   );
 }
@@ -51,12 +68,12 @@ function augmentOne(entity, config, utils) {
         ),
         config
       ),
-      serverClientHandler: buildRelativePackage(
+      serverClientDispatcher: buildRelativePackage(
         joinRelativePath(config.apiNext.serverClientPath),
         joinRelativePath(
           config.entityPath,
           "generated",
-          `${utils.toKababCase(entity.name)}-handler`
+          `${utils.toKababCase(entity.name)}-dispatcher`
         ),
         config
       ),
