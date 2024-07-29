@@ -40,7 +40,7 @@ import {
   <%_ if (entity.api.booleans.hasUpdateOne) { -%>
   <%= entity.api.strings.updateOneBody %>,
   <%_ } -%>
-} from '<%= entity.api.request.import %>';
+} from '<%- entity.apiNext.packages.serverClientRequest %>';
   <%_ if (entity.api.booleans.hasSearch) { -%>
 
 async function search<S extends <%= entity.strings.fieldRequestClass %>>(

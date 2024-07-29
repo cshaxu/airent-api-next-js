@@ -21,7 +21,9 @@ type HandlerConfig<CONTEXT, DATA, PARSED, RESULT, ERROR> = {
 
 type Handler = (request: Request) => Promise<Response>;
 
-async function jsonRequestParser<DATA>(request: Request): Promise<DATA> {
+async function jsonRequestParser<DATA extends object>(
+  request: Request
+): Promise<DATA> {
   try {
     return await request.json();
   } catch (error: any) {

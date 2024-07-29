@@ -36,7 +36,7 @@ import {
   <%_ if (entity.api.booleans.hasUpdateOne) { -%>
   <%= entity.api.strings.updateOneBody %>,
   <%_ } -%>
-} from '<%= entity.api.request.import %>';
+} from '<%- entity.apiNext.packages.serverClientRequest %>';
 
 function buildRequest(
   name: string,

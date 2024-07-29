@@ -11,12 +11,12 @@ const withDecoded = <S extends Record<string, any>>(params: S) =>
     return acc;
   }, {} as S);
 
-function respond<DATA, ERROR extends Error>(
-  executed: CommonResponse<DATA, ERROR>
-): DATA {
+function respond<RESULT = unknown, ERROR = unknown>(
+  executed: CommonResponse<RESULT, ERROR>
+): RESULT {
   const { result, error } = executed;
   if (result === undefined) {
-    throw createHttpError.InternalServerError(error?.message);
+    throw error ?? createHttpError.InternalServerError();
   }
   return result;
 }

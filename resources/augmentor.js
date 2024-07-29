@@ -77,6 +77,13 @@ function augmentOne(entity, config, utils) {
         ),
         config
       ),
+      serverClientRequest: entity.api.request?.import
+        ? buildRelativePackage(
+            joinRelativePath(config.apiNext.serverClientPath),
+            entity.api.request.import,
+            config
+          )
+        : undefined,
       serverClientClientClient: buildRelativePackage(
         joinRelativePath(config.apiNext.serverClientPath),
         joinRelativePath(
