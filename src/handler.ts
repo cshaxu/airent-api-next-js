@@ -68,7 +68,7 @@ function respond<RESULT, ERROR>(
     const headers = { "Content-Type": "text/plain" };
     return new Response(result as ReadableStream, { headers });
   }
-  const json = isNil(error) ? result : error;
+  const json = isNil(error) ? result ?? null : { error };
   return Response.json(json, { status: code });
 }
 
