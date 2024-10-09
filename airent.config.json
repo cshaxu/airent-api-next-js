@@ -49,6 +49,11 @@
       "skippable": false
     },
     {
+      "name": "resources/edge-client-template.ts.ejs",
+      "outputPath": "{apiNext.edgeClientPath}/{kababEntityName}.ts",
+      "skippable": false
+    },
+    {
       "name": "resources/server-cached-client-template.ts.ejs",
       "outputPath": "{apiNext.serverClientPath}/{kababEntityName}-cached.ts",
       "skippable": false
@@ -104,6 +109,7 @@
     "appPath": "test-output/app",
     "airentApiPath": "/api/airent",
     "serverClientPath": "test-output/server-clients",
+    "edgeClientPath": "test-output/edge-clients",
     "handlerConfigImportPath": "./test-sources/framework",
     "cronSourcePath": "test-sources/cron",
     "cronApiPath": "/api/cron",

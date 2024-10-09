@@ -68,6 +68,15 @@ function augmentOne(entity, config, utils) {
         ),
         config
       ),
+      edgeClientType: buildRelativePackage(
+        joinRelativePath(config.apiNext.edgeClientPath),
+        joinRelativePath(
+          config.entityPath,
+          "generated",
+          `${utils.toKababCase(entity.name)}-type`
+        ),
+        config
+      ),
       serverClientDispatcher: buildRelativePackage(
         joinRelativePath(config.apiNext.serverClientPath),
         joinRelativePath(
@@ -84,8 +93,15 @@ function augmentOne(entity, config, utils) {
             config
           )
         : undefined,
-      serverClientClientClient: buildRelativePackage(
-        joinRelativePath(config.apiNext.serverClientPath),
+      edgeClientRequest: entity.api.request?.import
+        ? buildRelativePackage(
+            joinRelativePath(config.apiNext.edgeClientPath),
+            entity.api.request.import,
+            config
+          )
+        : undefined,
+      edgeClientClientClient: buildRelativePackage(
+        joinRelativePath(config.apiNext.edgeClientPath),
         joinRelativePath(
           config.api.client.clientPath,
           utils.toKababCase(entity.name)
