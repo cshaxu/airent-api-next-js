@@ -1,105 +1,105 @@
-<% if (utils.isPresentableEntity(entity) && entity.api.booleans.hasAny) { -%>
+<% if (utils.isPresentableEntity(entity) && entity._booleans.api.hasAny) { -%>
 // entity imports
-import { <%= entity.strings.fieldRequestClass %> } from '<%- entity.apiNext.packages.edgeClientType %>';
+import { <%= entity._strings.fieldRequestClass %> } from '<%- entity._packages.apiNext.edgeClientToTypeFull %>';
 import {
-  <%_ if (entity.api.booleans.hasSearch) { -%>
-  <%= entity.api.strings.searchQuery %>,
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+  <%= entity._strings.api.searchQuery %>,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetMany) { -%>
-  <%= entity.api.strings.getManyQuery %>,
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+  <%= entity._strings.api.getManyQuery %>,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetOneRequest) { -%>
-  <%= entity.api.strings.getOneParams %>,
+  <%_ if (entity._booleans.api.hasGetOneRequest) { -%>
+  <%= entity._strings.api.getOneParams %>,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasCreateOne) { -%>
-  <%= entity.api.strings.createOneBody %>,
+  <%_ if (entity._booleans.api.hasCreateOne) { -%>
+  <%= entity._strings.api.createOneBody %>,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasUpdateOne) { -%>
-  <%= entity.api.strings.updateOneBody %>,
+  <%_ if (entity._booleans.api.hasUpdateOne) { -%>
+  <%= entity._strings.api.updateOneBody %>,
   <%_ } -%>
-} from '<%- entity.apiNext.packages.edgeClientRequest %>';
-import <%= entity.api.strings.apiClientClass %> from '<%- entity.apiNext.packages.edgeClientClientClient %>';
-  <%_ if (entity.api.booleans.hasSearch) { -%>
+} from '<%- entity._packages.apiNext.edgeClientToRequestFull %>';
+import <%= entity._strings.api.apiClientClass %> from '<%- entity._packages.apiNext.edgeClientToClientFull %>';
+  <%_ if (entity._booleans.api.hasSearch) { -%>
 
-const search = <S extends <%= entity.strings.fieldRequestClass %>>(
-  query: <%= entity.api.strings.searchQuery %>,
+const search = <S extends <%= entity._strings.fieldRequestClass %>>(
+  query: <%= entity._strings.api.searchQuery %>,
   fieldRequest: S,
   headers: Headers
-) => <%= entity.api.strings.apiClientClass %>.search(query, fieldRequest, { headers });
+) => <%= entity._strings.api.apiClientClass %>.search(query, fieldRequest, { headers });
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetMany) { -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
 
-const getMany = <S extends <%= entity.strings.fieldRequestClass %>>(
-  query: <%= entity.api.strings.getManyQuery %>,
+const getMany = <S extends <%= entity._strings.fieldRequestClass %>>(
+  query: <%= entity._strings.api.getManyQuery %>,
   fieldRequest: S,
   headers: Headers
-) => <%= entity.api.strings.apiClientClass %>.getMany(query, fieldRequest, { headers });
+) => <%= entity._strings.api.apiClientClass %>.getMany(query, fieldRequest, { headers });
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetOne) { -%>
+  <%_ if (entity._booleans.api.hasGetOne) { -%>
 
-const getOne = <S extends <%= entity.strings.fieldRequestClass %>>(
-  params: <%= entity.api.strings.getOneParams %>,
+const getOne = <S extends <%= entity._strings.fieldRequestClass %>>(
+  params: <%= entity._strings.api.getOneParams %>,
   fieldRequest: S,
   headers: Headers
-) => <%= entity.api.strings.apiClientClass %>.getOne(params, fieldRequest, { headers });
+) => <%= entity._strings.api.apiClientClass %>.getOne(params, fieldRequest, { headers });
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetOneSafe) { -%>
+  <%_ if (entity._booleans.api.hasGetOneSafe) { -%>
 
-const getOneSafe = <S extends <%= entity.strings.fieldRequestClass %>>(
-  params: <%= entity.api.strings.getOneParams %>,
+const getOneSafe = <S extends <%= entity._strings.fieldRequestClass %>>(
+  params: <%= entity._strings.api.getOneParams %>,
   fieldRequest: S,
   headers: Headers
-) => <%= entity.api.strings.apiClientClass %>.getOneSafe(params, fieldRequest, { headers });
+) => <%= entity._strings.api.apiClientClass %>.getOneSafe(params, fieldRequest, { headers });
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasCreateOne) { -%>
+  <%_ if (entity._booleans.api.hasCreateOne) { -%>
 
-const createOne = <S extends <%= entity.strings.fieldRequestClass %>>(
-  body: <%= entity.api.strings.createOneBody %>,
+const createOne = <S extends <%= entity._strings.fieldRequestClass %>>(
+  body: <%= entity._strings.api.createOneBody %>,
   fieldRequest: S,
   headers: Headers
-) => <%= entity.api.strings.apiClientClass %>.createOne(body, fieldRequest, { headers });
+) => <%= entity._strings.api.apiClientClass %>.createOne(body, fieldRequest, { headers });
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasUpdateOne) { -%>
+  <%_ if (entity._booleans.api.hasUpdateOne) { -%>
 
-const updateOne = <S extends <%= entity.strings.fieldRequestClass %>>(
-  params: <%= entity.api.strings.getOneParams %>,
-  body: <%= entity.api.strings.updateOneBody %>,
+const updateOne = <S extends <%= entity._strings.fieldRequestClass %>>(
+  params: <%= entity._strings.api.getOneParams %>,
+  body: <%= entity._strings.api.updateOneBody %>,
   fieldRequest: S,
   headers: Headers
-) => <%= entity.api.strings.apiClientClass %>.updateOne(params, body, fieldRequest, { headers });
+) => <%= entity._strings.api.apiClientClass %>.updateOne(params, body, fieldRequest, { headers });
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasDeleteOne) { -%>
+  <%_ if (entity._booleans.api.hasDeleteOne) { -%>
 
-const deleteOne = <S extends <%= entity.strings.fieldRequestClass %>>(
-  params: <%= entity.api.strings.getOneParams %>,
+const deleteOne = <S extends <%= entity._strings.fieldRequestClass %>>(
+  params: <%= entity._strings.api.getOneParams %>,
   fieldRequest: S,
   headers: Headers
-) => <%= entity.api.strings.apiClientClass %>.deleteOne(params, fieldRequest, { headers });
+) => <%= entity._strings.api.apiClientClass %>.deleteOne(params, fieldRequest, { headers });
   <%_ } -%>
 
   <%_ if (entity.deprecated) { -%>
 /** @deprecated */
   <%_ } -%>
 const <%= `${utils.toTitleCase(entity.name)}EdgeApiClient` %> = {
-  <%_ if (entity.api.booleans.hasSearch) { -%>
+  <%_ if (entity._booleans.api.hasSearch) { -%>
   search,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetMany) { -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
   getMany,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetOne) { -%>
+  <%_ if (entity._booleans.api.hasGetOne) { -%>
   getOne,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetOneSafe) { -%>
+  <%_ if (entity._booleans.api.hasGetOneSafe) { -%>
   getOneSafe,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasCreateOne) { -%>
+  <%_ if (entity._booleans.api.hasCreateOne) { -%>
   createOne,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasUpdateOne) { -%>
+  <%_ if (entity._booleans.api.hasUpdateOne) { -%>
   updateOne,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasDeleteOne) { -%>
+  <%_ if (entity._booleans.api.hasDeleteOne) { -%>
   deleteOne,
   <%_ } -%>
 };

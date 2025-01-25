@@ -1,11 +1,11 @@
 // airent imports
 import { dispatchWith } from '@airent/api';
-import { handleWith } from '<%- apiNextPackage %>';
+import { handleWith } from '<%- packages.toApiNextLibFull %>';
 
 // config imports
-import { Context } from '<%- contextPackage %>';
-import { dispatcherConfig } from '<%- dispatcherConfigPackage %>';
-import { handlerConfig } from '<%- handlerConfigPackage %>';
+import { Context } from '<%- packages.toContextFull %>';
+import { dispatcherConfig } from '<%- packages.toDispatcherConfigFull %>';
+import { handlerConfig } from '<%- packages.toHandlerConfigFull %>';
 
 // function imports
 import { executor } from '<%- entry.parsed.sourcePackage %>';

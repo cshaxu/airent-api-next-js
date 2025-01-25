@@ -1,53 +1,60 @@
 const path = require("path");
 const utils = require("airent/resources/utils.js");
 
-function enforceRelativePath(relativePath) /* string */ {
-  return relativePath.startsWith(".") ? relativePath : `./${relativePath}`;
+function buildRelativePath(sourcePath, targetPath) /* string */ {
+  const rawRelativePath = path
+    .relative(sourcePath, targetPath)
+    .replaceAll("\\", "/");
+  return rawRelativePath.startsWith(".")
+    ? rawRelativePath
+    : `./${rawRelativePath}`;
 }
 
-function joinRelativePath(...elements) /* string */ {
-  return enforceRelativePath(path.join(...elements).replaceAll("\\", "/"));
-}
-
-function buildRelativePackage(sourcePath, targetPath, config) /* string */ {
+function buildRelativeFull(sourcePath, targetPath, config) /* string */ {
   if (!targetPath.startsWith(".")) {
     return targetPath;
   }
   const suffix = utils.getModuleSuffix(config);
-  const relativePath = enforceRelativePath(
-    path.relative(sourcePath, targetPath).replaceAll("\\", "/")
-  );
+  const relativePath = buildRelativePath(sourcePath, targetPath);
   return `${relativePath}${suffix}`;
 }
 
 function augmentConfig(config) {
-  config.apiNext.baseLibPackage = config.apiNext.libImportPath
-    ? buildRelativePackage(
-        path.join(config.entityPath, "generated"),
+  config._packages.apiNext = config._packages.apiNext || {};
+
+  config._packages.apiNext.handlerToLibFull = config.apiNext.libImportPath
+    ? buildRelativeFull(
+        path.join(config.generatedPath, "handlers"),
         config.apiNext.libImportPath,
         config
       )
     : "@airent/api-next";
-  config.apiNext.serverClientLibPackage = config.apiNext.libImportPath
-    ? buildRelativePackage(
-        joinRelativePath(config.apiNext.serverClientPath),
+  config._packages.apiNext.handlerToHandlerConfigFull = buildRelativeFull(
+    path.join(config.generatedPath, "handlers"),
+    config.apiNext.handlerConfigImportPath,
+    config
+  );
+
+  config._packages.apiNext.serverClientToLibFull = config.apiNext.libImportPath
+    ? buildRelativeFull(
+        path.join(config.generatedPath, "server-clients"),
         config.apiNext.libImportPath,
         config
       )
     : "@airent/api-next";
-  config.apiNext.handlerConfigPackage = buildRelativePackage(
-    joinRelativePath(config.entityPath, "generated"),
+  config._packages.apiNext.serverClientToHandlerConfigFull = buildRelativeFull(
+    path.join(config.generatedPath, "server-clients"),
     config.apiNext.handlerConfigImportPath,
     config
   );
-  config.apiNext.serverClientHandlerConfigPackage = buildRelativePackage(
-    joinRelativePath(config.apiNext.serverClientPath),
-    config.apiNext.handlerConfigImportPath,
-    config
-  );
-  config.apiNext.serverClientContextPackage = buildRelativePackage(
-    joinRelativePath(config.apiNext.serverClientPath),
+  config._packages.apiNext.serverClientToContextFull = buildRelativeFull(
+    path.join(config.generatedPath, "server-clients"),
     config.contextImportPath,
+    config
+  );
+  config._packages.apiNext.serverClientToBaseUrlFull = buildRelativeFull(
+    path.join(config.generatedPath, "server-clients"),
+    config.api.client.baseUrlImportPath,
     config
   );
 }
@@ -57,71 +64,52 @@ function augmentOne(entity, config, utils) {
     return;
   }
 
-  entity.apiNext = {
-    packages: {
-      serverClientType: buildRelativePackage(
-        joinRelativePath(config.apiNext.serverClientPath),
-        joinRelativePath(
-          config.entityPath,
-          "generated",
-          `${utils.toKababCase(entity.name)}-type`
-        ),
-        config
+  entity._packages.apiNext = {
+    routeToHandlerFull: buildRelativePath(
+      path.join(
+        config.apiNext.appPath,
+        config.apiNext.airentApiPath,
+        "placeholder"
       ),
-      edgeClientType: buildRelativePackage(
-        joinRelativePath(config.apiNext.edgeClientPath),
-        joinRelativePath(
-          config.entityPath,
-          "generated",
-          `${utils.toKababCase(entity.name)}-type`
-        ),
-        config
-      ),
-      serverClientDispatcher: buildRelativePackage(
-        joinRelativePath(config.apiNext.serverClientPath),
-        joinRelativePath(
-          config.entityPath,
-          "generated",
-          `${utils.toKababCase(entity.name)}-dispatcher`
-        ),
-        config
-      ),
-      serverClientRequest: entity.api.request?.import
-        ? buildRelativePackage(
-            joinRelativePath(config.apiNext.serverClientPath),
-            entity.api.request.import,
-            config
-          )
-        : undefined,
-      edgeClientRequest: entity.api.request?.import
-        ? buildRelativePackage(
-            joinRelativePath(config.apiNext.edgeClientPath),
-            entity.api.request.import,
-            config
-          )
-        : undefined,
-      edgeClientClientClient: buildRelativePackage(
-        joinRelativePath(config.apiNext.edgeClientPath),
-        joinRelativePath(
-          config.api.client.clientPath,
-          utils.toKababCase(entity.name)
-        ),
-        config
-      ),
-      routeHandler: buildRelativePackage(
-        joinRelativePath(
-          config.apiNext.appPath,
-          config.apiNext.airentApiPath,
-          "placeholder"
-        ),
-        joinRelativePath(
-          config.entityPath,
-          "generated",
-          `${utils.toKababCase(entity.name)}-handler`
-        ),
-        config
-      ),
-    },
+      path.join(config.generatedPath, "handlers", entity._strings.moduleName),
+      config
+    ),
+    handlerToDispatcherFull: buildRelativePath(
+      path.join(config.generatedPath, "handlers"),
+      path.join(config.generatedPath, "dispatchers", entity._strings.moduleName)
+    ),
+
+    serverClientToTypeFull: buildRelativePath(
+      path.join(config.generatedPath, "server-clients"),
+      path.join(config.generatedPath, "types", entity._strings.moduleName)
+    ),
+    serverClientToDispatcherFull: buildRelativePath(
+      path.join(config.generatedPath, "server-clients"),
+      path.join(config.generatedPath, "dispatchers", entity._strings.moduleName)
+    ),
+    serverClientToRequestFull: entity.api.request?.import
+      ? buildRelativeFull(
+          path.join(config.generatedPath, "server-clients"),
+          entity.api.request.import,
+          config
+        )
+      : undefined,
+
+    edgeClientToTypeFull: buildRelativePath(
+      path.join(config.generatedPath, "edge-clients"),
+      path.join(config.generatedPath, "types", entity._strings.moduleName)
+    ),
+    edgeClientToRequestFull: entity.api.request?.import
+      ? buildRelativeFull(
+          path.join(config.generatedPath, "edge-clients"),
+          entity.api.request.import,
+          config
+        )
+      : undefined,
+    edgeClientToClientFull: buildRelativePath(
+      path.join(config.generatedPath, "edge-clients"),
+      path.join(config.generatedPath, "clients", entity._strings.moduleName)
+    ),
   };
 }
 

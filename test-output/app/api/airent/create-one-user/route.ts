@@ -1,4 +1,4 @@
 // entity imports
-import UserHandler from '../../../../entities/generated/user-handler.js';
+import UserHandler from '../../../../generated/handlers/user.js';
 
 export const POST = UserHandler.createOne;

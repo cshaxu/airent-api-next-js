@@ -1,12 +1,12 @@
 // entity imports
-import { UserFieldRequest } from '../entities/generated/user-type.js';
+import { UserFieldRequest } from '../types/user.js';
 import {
   SearchUsersQuery,
   GetManyUsersQuery,
   GetOneUserParams,
   CreateOneUserBody,
   UpdateOneUserBody,
-} from '../../test-sources/types/user-type.js';
+} from '../../../test-sources/types/user-type.js';
 import UserApiClient from '../clients/user.js';
 
 const search = <S extends UserFieldRequest>(

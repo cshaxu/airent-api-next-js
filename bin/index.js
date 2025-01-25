@@ -26,8 +26,6 @@ async function getShouldEnable(name) {
  *  @property {string} appPath
  *  @property {string} airentApiPath
  *  @property {string} handlerConfigImportPath
- *  @property {string} serverClientPath
- *  @property {string} edgeClientPath
  *  @property {?string} cronSourcePath
  *  @property {?string} cronApiPath
  *  @property {?string} cronHandlerOptions
@@ -58,22 +56,22 @@ const API_NEXT_AUGMENTOR_PATH = `${AIRENT_API_NEXT_RESOURCES_PATH}/augmentor.js`
 
 const API_NEXT_SERVER_CACHED_CLIENT_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-cached-client-template.ts.ejs`,
-  outputPath: `{apiNext.serverClientPath}/{kababEntityName}-cached.ts`,
+  outputPath: `{generatedPath}/server-clients/{kababEntityName}-cached.ts`,
   skippable: false,
 };
 const API_NEXT_SERVER_CLIENT_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-client-template.ts.ejs`,
-  outputPath: `{apiNext.serverClientPath}/{kababEntityName}.ts`,
+  outputPath: `{generatedPath}/server-clients/{kababEntityName}.ts`,
   skippable: false,
 };
 const API_NEXT_EDGE_CLIENT_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/edge-client-template.ts.ejs`,
-  outputPath: `{apiNext.edgeClientPath}/{kababEntityName}.ts`,
+  outputPath: `{generatedPath}/edge-clients/{kababEntityName}.ts`,
   skippable: false,
 };
 const API_NEXT_SERVER_HANDLER_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-handler-template.ts.ejs`,
-  outputPath: "{entityPath}/generated/{kababEntityName}-handler.ts",
+  outputPath: "{generatedPath}/handlers/{kababEntityName}.ts",
   skippable: false,
 };
 const API_NEXT_SERVER_CREATE_ONE_TEMPLATE_CONFIG = {
@@ -167,16 +165,6 @@ async function configure() {
   config.apiNext.airentApiPath = await askQuestion(
     "Airent API Path",
     config.apiNext.airentApiPath ?? "/api"
-  );
-
-  config.apiNext.serverClientPath = await askQuestion(
-    "Server-side Api Client Path",
-    config.apiNext.serverClientPath ?? "./src/server-clients"
-  );
-
-  config.apiNext.edgeClientPath = await askQuestion(
-    "Edge-side Api Client Path",
-    config.apiNext.edgeClientPath ?? "./src/edge-clients"
   );
 
   config.apiNext.handlerConfigImportPath = await askQuestion(

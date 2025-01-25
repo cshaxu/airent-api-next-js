@@ -1,42 +1,43 @@
-<% if (entity.api.booleans.hasAny) { -%>
+<% if (entity._booleans.api.hasAny) { -%>
 // library imports
 import { headers } from 'next/headers';
 
 // airent imports
-import { withDecoded, respond } from '<%- config.apiNext.serverClientLibPackage %>';
+import { withDecoded, respond } from '<%- config._packages.apiNext.serverClientToLibFull %>';
 
 // config imports
+import { baseUrl } from '<%- config._packages.apiNext.serverClientToBaseUrlFull %>';
 <%- config.api.client.baseUrlImport %>
-import { handlerConfig } from '<%- config.apiNext.serverClientHandlerConfigPackage %>';
+import { handlerConfig } from '<%- config._packages.apiNext.serverClientToHandlerConfigFull %>';
 
 // entity imports
 import {
-  <%= entity.strings.fieldRequestClass %>,
-  <%_ if (entity.api.booleans.hasSearch || entity.api.booleans.hasGetMany) { -%>
-  <%= entity.api.strings.manyResponse %>,
+  <%= entity._strings.fieldRequestClass %>,
+  <%_ if (entity._booleans.api.hasSearch || entity._booleans.api.hasGetMany) { -%>
+  <%= entity._strings.api.manyResponse %>,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetOneRequest || entity.api.booleans.hasCreateOne) { -%>
-  <%= entity.api.strings.oneResponse %>,
+  <%_ if (entity._booleans.api.hasGetOneRequest || entity._booleans.api.hasCreateOne) { -%>
+  <%= entity._strings.api.oneResponse %>,
   <%_ } -%>
-} from '<%- entity.apiNext.packages.serverClientType %>';
-import <%= entity.api.strings.dispatcherClass %> from '<%- entity.apiNext.packages.serverClientDispatcher %>';
+} from '<%- entity._packages.apiNext.serverClientToTypeFull %>';
+import <%= entity._strings.api.dispatcherClass %> from '<%- entity._packages.apiNext.serverClientToDispatcherFull %>';
 import {
-  <%_ if (entity.api.booleans.hasSearch) { -%>
-  <%= entity.api.strings.searchQuery %>,
+  <%_ if (entity._booleans.api.hasSearch) { -%>
+  <%= entity._strings.api.searchQuery %>,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetMany) { -%>
-  <%= entity.api.strings.getManyQuery %>,
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
+  <%= entity._strings.api.getManyQuery %>,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetOneRequest) { -%>
-  <%= entity.api.strings.getOneParams %>,
+  <%_ if (entity._booleans.api.hasGetOneRequest) { -%>
+  <%= entity._strings.api.getOneParams %>,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasCreateOne) { -%>
-  <%= entity.api.strings.createOneBody %>,
+  <%_ if (entity._booleans.api.hasCreateOne) { -%>
+  <%= entity._strings.api.createOneBody %>,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasUpdateOne) { -%>
-  <%= entity.api.strings.updateOneBody %>,
+  <%_ if (entity._booleans.api.hasUpdateOne) { -%>
+  <%= entity._strings.api.updateOneBody %>,
   <%_ } -%>
-} from '<%- entity.apiNext.packages.serverClientRequest %>';
+} from '<%- entity._packages.apiNext.serverClientToRequestFull %>';
 
 function buildRequest(
   name: string,
@@ -51,89 +52,89 @@ function buildRequest(
   };
   return new Request(input, init);
 }
-  <%_ if (entity.api.booleans.hasSearch) { -%>
+  <%_ if (entity._booleans.api.hasSearch) { -%>
 
-async function search<S extends <%= entity.strings.fieldRequestClass %>>(
-  query: <%= entity.api.strings.searchQuery %>,
+async function search<S extends <%= entity._strings.fieldRequestClass %>>(
+  query: <%= entity._strings.api.searchQuery %>,
   fieldRequest: S
-): Promise<<%= entity.api.strings.manyResponse %><S>> {
+): Promise<<%= entity._strings.api.manyResponse %><S>> {
   const data = { query: withDecoded(query), fieldRequest };
   const request = buildRequest('<%= `search-${utils.pluralize(utils.toKababCase(entity.name))}` %>', data);
   const context = await handlerConfig.authenticator(request);
-  return await <%= entity.api.strings.dispatcherClass %>.search(data, context).then(respond);
+  return await <%= entity._strings.api.dispatcherClass %>.search(data, context).then(respond);
 }
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetMany) { -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
 
-async function getMany<S extends <%= entity.strings.fieldRequestClass %>>(
-  query: <%= entity.api.strings.getManyQuery %>,
+async function getMany<S extends <%= entity._strings.fieldRequestClass %>>(
+  query: <%= entity._strings.api.getManyQuery %>,
   fieldRequest: S
-): Promise<<%= entity.api.strings.manyResponse %><S>> {
+): Promise<<%= entity._strings.api.manyResponse %><S>> {
   const data = { query: withDecoded(query), fieldRequest };
   const request = buildRequest('<%= `get-many-${utils.pluralize(utils.toKababCase(entity.name))}` %>', data);
   const context = await handlerConfig.authenticator(request);
-  return await <%= entity.api.strings.dispatcherClass %>.getMany(data, context).then(respond);
+  return await <%= entity._strings.api.dispatcherClass %>.getMany(data, context).then(respond);
 }
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetOne) { -%>
+  <%_ if (entity._booleans.api.hasGetOne) { -%>
 
-async function getOne<S extends <%= entity.strings.fieldRequestClass %>>(
-  params: <%= entity.api.strings.getOneParams %>,
+async function getOne<S extends <%= entity._strings.fieldRequestClass %>>(
+  params: <%= entity._strings.api.getOneParams %>,
   fieldRequest: S
-): Promise<<%= entity.api.strings.oneResponse %><S>> {
+): Promise<<%= entity._strings.api.oneResponse %><S>> {
   const data = { params: withDecoded(params), fieldRequest };
   const request = buildRequest('<%= `get-one-${utils.toKababCase(entity.name)}` %>', data);
   const context = await handlerConfig.authenticator(request);
-  return await <%= entity.api.strings.dispatcherClass %>.getOne(data, context).then(respond);
+  return await <%= entity._strings.api.dispatcherClass %>.getOne(data, context).then(respond);
 }
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetOneSafe) { -%>
+  <%_ if (entity._booleans.api.hasGetOneSafe) { -%>
 
-async function getOneSafe<S extends <%= entity.strings.fieldRequestClass %>>(
-  params: <%= entity.api.strings.getOneParams %>,
+async function getOneSafe<S extends <%= entity._strings.fieldRequestClass %>>(
+  params: <%= entity._strings.api.getOneParams %>,
   fieldRequest: S
-): Promise<<%= entity.api.strings.oneResponse %><S, true>> {
+): Promise<<%= entity._strings.api.oneResponse %><S, true>> {
   const data = { params: withDecoded(params), fieldRequest };
   const request = buildRequest('<%= `get-one-${utils.toKababCase(entity.name)}-safe` %>', data);
   const context = await handlerConfig.authenticator(request);
-  return await <%= entity.api.strings.dispatcherClass %>.getOneSafe(data, context).then(respond);
+  return await <%= entity._strings.api.dispatcherClass %>.getOneSafe(data, context).then(respond);
 }
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasCreateOne) { -%>
+  <%_ if (entity._booleans.api.hasCreateOne) { -%>
 
-async function createOne<S extends <%= entity.strings.fieldRequestClass %>>(
-  body: <%= entity.api.strings.createOneBody %>,
+async function createOne<S extends <%= entity._strings.fieldRequestClass %>>(
+  body: <%= entity._strings.api.createOneBody %>,
   fieldRequest: S
-): Promise<<%= entity.api.strings.oneResponse %><S>> {
+): Promise<<%= entity._strings.api.oneResponse %><S>> {
   const data = { body, fieldRequest };
   const request = buildRequest('<%= `create-one-${utils.toKababCase(entity.name)}` %>', data);
   const context = await handlerConfig.authenticator(request);
-  return await <%= entity.api.strings.dispatcherClass %>.createOne(data, context).then(respond);
+  return await <%= entity._strings.api.dispatcherClass %>.createOne(data, context).then(respond);
 }
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasUpdateOne) { -%>
+  <%_ if (entity._booleans.api.hasUpdateOne) { -%>
 
-async function updateOne<S extends <%= entity.strings.fieldRequestClass %>>(
-  params: <%= entity.api.strings.getOneParams %>,
-  body: <%= entity.api.strings.updateOneBody %>,
+async function updateOne<S extends <%= entity._strings.fieldRequestClass %>>(
+  params: <%= entity._strings.api.getOneParams %>,
+  body: <%= entity._strings.api.updateOneBody %>,
   fieldRequest: S
-): Promise<<%= entity.api.strings.oneResponse %><S>> {
+): Promise<<%= entity._strings.api.oneResponse %><S>> {
   const data = { params: withDecoded(params), body, fieldRequest };
   const request = buildRequest('<%= `update-one-${utils.toKababCase(entity.name)}` %>', data);
   const context = await handlerConfig.authenticator(request);
-  return await <%= entity.api.strings.dispatcherClass %>.updateOne(data, context).then(respond);
+  return await <%= entity._strings.api.dispatcherClass %>.updateOne(data, context).then(respond);
 }
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasDeleteOne) { -%>
+  <%_ if (entity._booleans.api.hasDeleteOne) { -%>
 
-async function deleteOne<S extends <%= entity.strings.fieldRequestClass %>>(
-  params: <%= entity.api.strings.getOneParams %>,
+async function deleteOne<S extends <%= entity._strings.fieldRequestClass %>>(
+  params: <%= entity._strings.api.getOneParams %>,
   fieldRequest: S,
-): Promise<<%= entity.api.strings.oneResponse %><S>> {
+): Promise<<%= entity._strings.api.oneResponse %><S>> {
   const data = { params: withDecoded(params), fieldRequest };
   const request = buildRequest('<%= `delete-one-${utils.toKababCase(entity.name)}` %>', data);
   const context = await handlerConfig.authenticator(request);
-  return await <%= entity.api.strings.dispatcherClass %>.deleteOne(data, context).then(respond);
+  return await <%= entity._strings.api.dispatcherClass %>.deleteOne(data, context).then(respond);
 }
   <%_ } -%>
 
@@ -141,25 +142,25 @@ async function deleteOne<S extends <%= entity.strings.fieldRequestClass %>>(
 /** @deprecated */
   <%_ } -%>
 const <%= `${utils.toTitleCase(entity.name)}ServerApiClient` %> = {
-  <%_ if (entity.api.booleans.hasSearch) { -%>
+  <%_ if (entity._booleans.api.hasSearch) { -%>
   search,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetMany) { -%>
+  <%_ if (entity._booleans.api.hasGetMany) { -%>
   getMany,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetOne) { -%>
+  <%_ if (entity._booleans.api.hasGetOne) { -%>
   getOne,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasGetOneSafe) { -%>
+  <%_ if (entity._booleans.api.hasGetOneSafe) { -%>
   getOneSafe,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasCreateOne) { -%>
+  <%_ if (entity._booleans.api.hasCreateOne) { -%>
   createOne,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasUpdateOne) { -%>
+  <%_ if (entity._booleans.api.hasUpdateOne) { -%>
   updateOne,
   <%_ } -%>
-  <%_ if (entity.api.booleans.hasDeleteOne) { -%>
+  <%_ if (entity._booleans.api.hasDeleteOne) { -%>
   deleteOne,
   <%_ } -%>
 };

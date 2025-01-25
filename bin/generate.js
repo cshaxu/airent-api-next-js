@@ -174,31 +174,25 @@ async function generateInner(
   const absoluteOutputPath = path.join(PROJECT_PATH, outputPath);
 
   if (outputType === "file") {
-    const apiNextPackage = buildLibPackage(
-      path.dirname(absoluteOutputPath),
-      config
-    );
-    const contextPackage = buildContextPackage(
-      path.dirname(absoluteOutputPath),
-      config
-    );
-    const handlerConfigPackage = buildHandlerConfigPackage(
-      path.dirname(absoluteOutputPath),
-      config
-    );
-    const dispatcherConfigPackage = buildDispatcherConfigPackage(
-      path.dirname(absoluteOutputPath),
-      config
-    );
-    const data = {
-      apiNextPackage,
-      contextPackage,
-      handlerConfigPackage,
-      dispatcherConfigPackage,
-      entries,
-      config,
-      utils,
+    const packages = {
+      toApiNextLibFull: buildLibPackage(
+        path.dirname(absoluteOutputPath),
+        config
+      ),
+      toContextFull: buildContextPackage(
+        path.dirname(absoluteOutputPath),
+        config
+      ),
+      toHandlerConfigFull: buildHandlerConfigPackage(
+        path.dirname(absoluteOutputPath),
+        config
+      ),
+      toDispatcherConfigFull: buildDispatcherConfigPackage(
+        path.dirname(absoluteOutputPath),
+        config
+      ),
     };
+    const data = { packages, entries, config, utils };
     const content = ejs.render(template, data);
     await writeFileContent(
       path.dirname(absoluteOutputPath),
@@ -207,26 +201,20 @@ async function generateInner(
     );
   } else if (outputType === "files") {
     await remove(absoluteOutputPath);
-    const apiNextPackage = buildLibPackage(absoluteOutputPath, config);
-    const contextPackage = buildContextPackage(absoluteOutputPath, config);
-    const handlerConfigPackage = buildHandlerConfigPackage(
-      absoluteOutputPath,
-      config
-    );
-    const dispatcherConfigPackage = buildDispatcherConfigPackage(
-      absoluteOutputPath,
-      config
-    );
+    const packages = {
+      toApiNextLibFull: buildLibPackage(absoluteOutputPath, config),
+      toContextFull: buildContextPackage(absoluteOutputPath, config),
+      toHandlerConfigFull: buildHandlerConfigPackage(
+        absoluteOutputPath,
+        config
+      ),
+      toDispatcherConfigFull: buildDispatcherConfigPackage(
+        absoluteOutputPath,
+        config
+      ),
+    };
     const functions = entries.map(async (entry) => {
-      const data = {
-        apiNextPackage,
-        contextPackage,
-        handlerConfigPackage,
-        dispatcherConfigPackage,
-        entry,
-        config,
-        utils,
-      };
+      const data = { packages, entry, config, utils };
       const outputContent = ejs.render(template, data);
       await writeFileContent(
         absoluteOutputPath,
@@ -242,28 +230,19 @@ async function generateInner(
         absoluteOutputPath,
         entry.name
       );
-      const apiNextPackage = buildLibPackage(absoluteOutputFolderPath, config);
-      const contextPackage = buildContextPackage(
-        absoluteOutputFolderPath,
-        config
-      );
-      const handlerConfigPackage = buildHandlerConfigPackage(
-        absoluteOutputFolderPath,
-        config
-      );
-      const dispatcherConfigPackage = buildDispatcherConfigPackage(
-        absoluteOutputFolderPath,
-        config
-      );
-      const data = {
-        apiNextPackage,
-        contextPackage,
-        handlerConfigPackage,
-        dispatcherConfigPackage,
-        entry,
-        config,
-        utils,
+      const packages = {
+        toApiNextLibFull: buildLibPackage(absoluteOutputFolderPath, config),
+        toContextFull: buildContextPackage(absoluteOutputFolderPath, config),
+        toHandlerConfigFull: buildHandlerConfigPackage(
+          absoluteOutputFolderPath,
+          config
+        ),
+        toDispatcherConfigFull: buildDispatcherConfigPackage(
+          absoluteOutputFolderPath,
+          config
+        ),
       };
+      const data = { packages, entry, config, utils };
       const outputContent = ejs.render(template, data);
       await writeFileContent(
         absoluteOutputFolderPath,

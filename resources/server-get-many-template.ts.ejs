@@ -1,6 +1,6 @@
-<% if (entity.api && entity.api.booleans.hasGetMany) { -%>
+<% if (entity.api && entity._booleans.api.hasGetMany) { -%>
 // entity imports
-import <%= `${utils.toTitleCase(entity.name)}Handler` %> from '<%- entity.apiNext.packages.routeHandler %>';
+import <%= `${utils.toTitleCase(entity.name)}Handler` %> from '<%- entity._packages.apiNext.routeToHandlerFull %>';
 
 export const POST = <%= `${utils.toTitleCase(entity.name)}Handler` %>.getMany;
 <% } -%>

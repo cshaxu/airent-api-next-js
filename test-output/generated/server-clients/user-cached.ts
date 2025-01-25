@@ -2,25 +2,25 @@
 import { unstable_cache } from 'next/cache';
 
 // airent imports
-import { NextCacheOptions, withDecoded, respond } from '../../src/index.js';
+import { NextCacheOptions, withDecoded, respond } from '../../../src/index.js';
 
 // config imports
-import { Context } from '../../test-sources/context.js';
+import { Context } from '../../../test-sources/context.js';
 
 // entity imports
 import {
   UserFieldRequest,
   ManyUsersResponse,
   OneUserResponse,
-} from '../entities/generated/user-type.js';
-import UserDispatcher from '../entities/generated/user-dispatcher.js';
+} from '../types/user.js';
+import UserDispatcher from '../dispatchers/user.js';
 import {
   SearchUsersQuery,
   GetManyUsersQuery,
   GetOneUserParams,
   CreateOneUserBody,
   UpdateOneUserBody,
-} from '../../test-sources/types/user-type.js';
+} from '../../../test-sources/types/user-type.js';
 
 async function search<S extends UserFieldRequest>(
   query: SearchUsersQuery,

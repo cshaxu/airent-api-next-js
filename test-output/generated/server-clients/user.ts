@@ -2,26 +2,27 @@
 import { headers } from 'next/headers';
 
 // airent imports
-import { withDecoded, respond } from '../../src/index.js';
+import { withDecoded, respond } from '../../../src/index.js';
 
 // config imports
-import { baseUrl } from '../../test-sources/config';
-import { handlerConfig } from '../../test-sources/framework.js';
+import { baseUrl } from '../../../test-sources/config.js';
+
+import { handlerConfig } from '../../../test-sources/framework.js';
 
 // entity imports
 import {
   UserFieldRequest,
   ManyUsersResponse,
   OneUserResponse,
-} from '../entities/generated/user-type.js';
-import UserDispatcher from '../entities/generated/user-dispatcher.js';
+} from '../types/user.js';
+import UserDispatcher from '../dispatchers/user.js';
 import {
   SearchUsersQuery,
   GetManyUsersQuery,
   GetOneUserParams,
   CreateOneUserBody,
   UpdateOneUserBody,
-} from '../../test-sources/types/user-type.js';
+} from '../../../test-sources/types/user-type.js';
 
 function buildRequest(
   name: string,
