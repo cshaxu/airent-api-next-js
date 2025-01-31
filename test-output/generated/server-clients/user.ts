@@ -1,5 +1,5 @@
 // library imports
-import { headers } from 'next/headers';
+import { headers as getHeaders } from 'next/headers';
 
 // airent imports
 import { withDecoded, respond } from '../../../src/index.js';
@@ -24,17 +24,15 @@ import {
   UpdateOneUserBody,
 } from '../../../test-sources/types/user-type.js';
 
-function buildRequest(
+async function buildRequest(
   name: string,
   data: any,
-): Request {
+): Promise<Request> {
   const input = `${baseUrl}/${name}`;
-  const init = {
-    credentials: 'include' as RequestCredentials,
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: headers(),
-  };
+  const credentials = 'include' as RequestCredentials;
+  const headers = await getHeaders();
+  const body = JSON.stringify(data);
+  const init = { credentials, method: 'POST', body, headers };
   return new Request(input, init);
 }
 
@@ -43,7 +41,7 @@ async function search<S extends UserFieldRequest>(
   fieldRequest: S
 ): Promise<ManyUsersResponse<S>> {
   const data = { query: withDecoded(query), fieldRequest };
-  const request = buildRequest('search-users', data);
+  const request = await buildRequest('search-users', data);
   const context = await handlerConfig.authenticator(request);
   return await UserDispatcher.search(data, context).then(respond);
 }
@@ -53,7 +51,7 @@ async function getMany<S extends UserFieldRequest>(
   fieldRequest: S
 ): Promise<ManyUsersResponse<S>> {
   const data = { query: withDecoded(query), fieldRequest };
-  const request = buildRequest('get-many-users', data);
+  const request = await buildRequest('get-many-users', data);
   const context = await handlerConfig.authenticator(request);
   return await UserDispatcher.getMany(data, context).then(respond);
 }
@@ -63,7 +61,7 @@ async function getOne<S extends UserFieldRequest>(
   fieldRequest: S
 ): Promise<OneUserResponse<S>> {
   const data = { params: withDecoded(params), fieldRequest };
-  const request = buildRequest('get-one-user', data);
+  const request = await buildRequest('get-one-user', data);
   const context = await handlerConfig.authenticator(request);
   return await UserDispatcher.getOne(data, context).then(respond);
 }
@@ -73,7 +71,7 @@ async function getOneSafe<S extends UserFieldRequest>(
   fieldRequest: S
 ): Promise<OneUserResponse<S, true>> {
   const data = { params: withDecoded(params), fieldRequest };
-  const request = buildRequest('get-one-user-safe', data);
+  const request = await buildRequest('get-one-user-safe', data);
   const context = await handlerConfig.authenticator(request);
   return await UserDispatcher.getOneSafe(data, context).then(respond);
 }
@@ -83,7 +81,7 @@ async function createOne<S extends UserFieldRequest>(
   fieldRequest: S
 ): Promise<OneUserResponse<S>> {
   const data = { body, fieldRequest };
-  const request = buildRequest('create-one-user', data);
+  const request = await buildRequest('create-one-user', data);
   const context = await handlerConfig.authenticator(request);
   return await UserDispatcher.createOne(data, context).then(respond);
 }
@@ -94,7 +92,7 @@ async function updateOne<S extends UserFieldRequest>(
   fieldRequest: S
 ): Promise<OneUserResponse<S>> {
   const data = { params: withDecoded(params), body, fieldRequest };
-  const request = buildRequest('update-one-user', data);
+  const request = await buildRequest('update-one-user', data);
   const context = await handlerConfig.authenticator(request);
   return await UserDispatcher.updateOne(data, context).then(respond);
 }
@@ -104,7 +102,7 @@ async function deleteOne<S extends UserFieldRequest>(
   fieldRequest: S,
 ): Promise<OneUserResponse<S>> {
   const data = { params: withDecoded(params), fieldRequest };
-  const request = buildRequest('delete-one-user', data);
+  const request = await buildRequest('delete-one-user', data);
   const context = await handlerConfig.authenticator(request);
   return await UserDispatcher.deleteOne(data, context).then(respond);
 }
