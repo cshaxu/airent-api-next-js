@@ -6,27 +6,9 @@ const ejs = require("ejs");
 const fs = require("fs");
 const path = require("path");
 
+const utils = require("airent/resources/utils");
+
 // UTILITIES //
-
-function getModuleSuffix(config) /* string */ {
-  return config.type === "module" ? ".js" : "";
-}
-
-function toTitleCase(name) {
-  return name
-    .split("-")
-    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-    .join("");
-}
-
-function toCamelCase(name) {
-  return name
-    .split("-")
-    .map((s, i) => (i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1)))
-    .join("");
-}
-
-const utils = { getModuleSuffix, toTitleCase, toCamelCase };
 
 const getTypeScriptFileNames = (inputPath) =>
   fs.promises
@@ -96,7 +78,7 @@ function buildPackage(absoluteSourcePath, targetPath, config) {
     const relativePath = path
       .relative(absoluteSourcePath, path.join(PROJECT_PATH, targetPath))
       .replaceAll("\\", "/");
-    return `${relativePath}${getModuleSuffix(config)}`;
+    return `${relativePath}${utils.getModuleSuffix(config)}`;
   }
   return targetPath;
 }

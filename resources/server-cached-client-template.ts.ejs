@@ -179,7 +179,7 @@ async function deleteOne<S extends <%= entity._strings.fieldRequestClass %>>(
   <%_ if (entity.deprecated) { -%>
 /** @deprecated */
   <%_ } -%>
-const <%= `${utils.toTitleCase(entity.name)}CachedServerApiClient` %> = {
+const <%= `${utils.toPascalCase(entity.name)}CachedServerApiClient` %> = {
   <%_ if (entity._booleans.api.hasSearch) { -%>
   search,
   <%_ } -%>
@@ -203,5 +203,5 @@ const <%= `${utils.toTitleCase(entity.name)}CachedServerApiClient` %> = {
   <%_ } -%>
 };
 
-export default <%= `${utils.toTitleCase(entity.name)}CachedServerApiClient` %>;
+export default <%= `${utils.toPascalCase(entity.name)}CachedServerApiClient` %>;
 <% } -%>
