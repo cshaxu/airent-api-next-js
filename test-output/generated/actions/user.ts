@@ -18,7 +18,7 @@ import {
   GetOneUserParams,
   CreateOneUserBody,
   UpdateOneUserBody,
-} from '../../../test-sources/types/user-type.js';
+} from '../../api-types/user.js';
 import UserService from '../../services/user.js';
 
 // api response builders

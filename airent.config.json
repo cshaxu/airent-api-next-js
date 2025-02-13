@@ -10,6 +10,11 @@
   ],
   "templates": [
     {
+      "name": "node_modules/@airent/api/resources/type-template.ts.ejs",
+      "outputPath": "{api.typesPath}/{kababEntityName}.ts",
+      "skippable": true
+    },
+    {
       "name": "node_modules/@airent/api/resources/dispatcher-template.ts.ejs",
       "outputPath": "{generatedPath}/dispatchers/{kababEntityName}.ts",
       "skippable": false
@@ -96,6 +101,7 @@
     }
   ],
   "api": {
+    "typesPath": "test-output/api-types",
     "server": {
       "servicePath": "test-output/services",
       "dispatcherConfigImportPath": "./test-sources/framework"

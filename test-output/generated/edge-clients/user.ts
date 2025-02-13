@@ -6,7 +6,7 @@ import {
   GetOneUserParams,
   CreateOneUserBody,
   UpdateOneUserBody,
-} from '../../../test-sources/types/user-type.js';
+} from '../../api-types/user.js';
 import UserApiClient from '../clients/user.js';
 
 const search = <S extends UserFieldRequest>(

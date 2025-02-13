@@ -59,7 +59,7 @@ function augmentConfig(config) {
   );
 }
 
-function augmentOne(entity, config, utils) {
+function augmentOne(entity, config) {
   if (!entity.api) {
     return;
   }
@@ -87,25 +87,19 @@ function augmentOne(entity, config, utils) {
       path.join(config.generatedPath, "server-clients"),
       path.join(config.generatedPath, "dispatchers", entity._strings.moduleName)
     ),
-    serverClientToRequestFull: entity.api.request?.import
-      ? buildRelativeFull(
-          path.join(config.generatedPath, "server-clients"),
-          entity.api.request.import,
-          config
-        )
-      : undefined,
+    serverClientToRequestFull: buildRelativePath(
+      path.join(config.generatedPath, "server-clients"),
+      path.join(config.api.typesPath, entity._strings.moduleName)
+    ),
 
     edgeClientToTypeFull: buildRelativePath(
       path.join(config.generatedPath, "edge-clients"),
       path.join(config.generatedPath, "types", entity._strings.moduleName)
     ),
-    edgeClientToRequestFull: entity.api.request?.import
-      ? buildRelativeFull(
-          path.join(config.generatedPath, "edge-clients"),
-          entity.api.request.import,
-          config
-        )
-      : undefined,
+    edgeClientToRequestFull: buildRelativePath(
+      path.join(config.generatedPath, "edge-clients"),
+      path.join(config.api.typesPath, entity._strings.moduleName)
+    ),
     edgeClientToClientFull: buildRelativePath(
       path.join(config.generatedPath, "edge-clients"),
       path.join(config.generatedPath, "clients", entity._strings.moduleName)
@@ -114,11 +108,9 @@ function augmentOne(entity, config, utils) {
 }
 
 function augment(data) {
-  const { entityMap, config, utils } = data;
+  const { entityMap, config } = data;
   augmentConfig(config);
-  Object.values(entityMap).forEach((entity) =>
-    augmentOne(entity, config, utils)
-  );
+  Object.values(entityMap).forEach((entity) => augmentOne(entity, config));
 }
 
 module.exports = { augment };

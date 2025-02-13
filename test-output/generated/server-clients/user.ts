@@ -6,7 +6,6 @@ import { withDecoded, respond } from '../../../src/index.js';
 
 // config imports
 import { baseUrl } from '../../../test-sources/config.js';
-
 import { handlerConfig } from '../../../test-sources/framework.js';
 
 // entity imports
@@ -22,7 +21,7 @@ import {
   GetOneUserParams,
   CreateOneUserBody,
   UpdateOneUserBody,
-} from '../../../test-sources/types/user-type.js';
+} from '../../api-types/user.js';
 
 async function buildRequest(
   name: string,
