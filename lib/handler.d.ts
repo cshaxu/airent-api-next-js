@@ -2,6 +2,7 @@ import { Awaitable, Dispatcher, ErrorHandler } from "@airent/api";
 type Authenticator<CONTEXT> = (request: Request) => Awaitable<CONTEXT>;
 type RequestParser<DATA> = (request: Request) => Awaitable<DATA>;
 type HandlerConfig<CONTEXT, DATA, PARSED, RESULT, ERROR> = {
+    isCustomResponse?: boolean;
     authenticator: Authenticator<CONTEXT>;
     requestParser: RequestParser<DATA>;
     errorHandler?: ErrorHandler<CONTEXT, DATA, PARSED, RESULT, ERROR>;

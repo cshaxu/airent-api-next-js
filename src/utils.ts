@@ -1,7 +1,7 @@
 import { CommonResponse } from "@airent/api";
 import createHttpError from "http-errors";
 
-const withDecoded = <S extends Record<string, any>>(params: S) =>
+const toDecoded = <S extends Record<string, any>>(params: S) =>
   Object.entries(params).reduce((acc, [key, value]) => {
     if (typeof value === "string") {
       (acc as Record<string, any>)[key] = decodeURIComponent(value);
@@ -11,7 +11,7 @@ const withDecoded = <S extends Record<string, any>>(params: S) =>
     return acc;
   }, {} as S);
 
-function respond<RESULT = unknown, ERROR = unknown>(
+function toResult<RESULT = unknown, ERROR = unknown>(
   executed: CommonResponse<RESULT, ERROR>
 ): RESULT {
   const { result, error } = executed;
@@ -21,4 +21,4 @@ function respond<RESULT = unknown, ERROR = unknown>(
   return result;
 }
 
-export { respond, withDecoded };
+export { toDecoded, toResult };

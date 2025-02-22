@@ -5,7 +5,6 @@ import {
   DispatcherContext,
   ErrorHandler,
   isNil,
-  isReadableStream,
 } from "@airent/api";
 import createHttpError from "http-errors";
 
@@ -14,6 +13,7 @@ type Authenticator<CONTEXT> = (request: Request) => Awaitable<CONTEXT>;
 type RequestParser<DATA> = (request: Request) => Awaitable<DATA>;
 
 type HandlerConfig<CONTEXT, DATA, PARSED, RESULT, ERROR> = {
+  isCustomResponse?: boolean;
   authenticator: Authenticator<CONTEXT>;
   requestParser: RequestParser<DATA>;
   errorHandler?: ErrorHandler<CONTEXT, DATA, PARSED, RESULT, ERROR>;
@@ -35,7 +35,7 @@ function handleWith<CONTEXT, DATA, PARSED, RESULT, ERROR>(
   dispatcher: Dispatcher<CONTEXT, DATA, RESULT, ERROR>,
   config: HandlerConfig<CONTEXT, DATA, PARSED, RESULT, ERROR>
 ): Handler {
-  const { authenticator, requestParser } = config;
+  const { isCustomResponse, authenticator, requestParser } = config;
   const errorHandler =
     config.errorHandler ??
     ((error) => {
@@ -52,22 +52,21 @@ function handleWith<CONTEXT, DATA, PARSED, RESULT, ERROR>(
         dispatcherContext.data,
         dispatcherContext.context
       );
-      return respond(commonResponse);
+      if (isCustomResponse) {
+        return commonResponse.result as Response;
+      }
+      return buildJsonResponse(commonResponse);
     } catch (error) {
       const commonResponse = await errorHandler(error, dispatcherContext);
-      return respond(commonResponse);
+      return buildJsonResponse(commonResponse);
     }
   };
 }
 
-function respond<RESULT, ERROR>(
+function buildJsonResponse<RESULT, ERROR>(
   commonResponse: CommonResponse<RESULT, ERROR>
 ): Response {
   const { code, result, error } = commonResponse;
-  if (isReadableStream(result)) {
-    const headers = { "Content-Type": "text/plain" };
-    return new Response(result as ReadableStream, { headers });
-  }
   const json = isNil(error) ? result ?? null : { error };
   return Response.json(json, { status: code });
 }
