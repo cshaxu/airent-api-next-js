@@ -12,7 +12,7 @@ type NextSearchParams = {
     [key: string]: string | string[] | undefined;
 };
 type NextPageProps<PARAMS = {}, SEARCH_PARAMS = NextSearchParams> = {
-    params: PARAMS;
-    searchParams: SEARCH_PARAMS;
+    params: Promise<PARAMS>;
+    searchParams: Promise<SEARCH_PARAMS>;
 };
 export { NextCacheOptions, NextErrorProps, NextPageProps, NextSearchParams };
