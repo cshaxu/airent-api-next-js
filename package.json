@@ -37,7 +37,7 @@
     "resources"
   ],
   "dependencies": {
-    "@airent/api": "github:cshaxu/airent-api-js#a6a3a677917f224ef1fd2b942f8d6fbea6db6c56",
+    "@airent/api": "github:cshaxu/airent-api-js#557a2617130b2cf1f5b6ec977a8307b766de434c",
     "ejs": "^3.1.10",
     "http-errors": "^2.0.0",
     "zod": "^3.23.8"
