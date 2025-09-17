@@ -1,4 +1,5 @@
-import { Awaitable, Dispatcher, ErrorHandler } from "@airent/api";
+import { Dispatcher, ErrorHandler } from "@airent/api";
+import { Awaitable } from "airent";
 type Authenticator<CONTEXT> = (request: Request) => Awaitable<CONTEXT>;
 type RequestParser<DATA> = (request: Request) => Awaitable<DATA>;
 type HandlerConfig<CONTEXT, DATA, PARSED, RESULT, ERROR> = {

@@ -1,11 +1,11 @@
 import {
-  Awaitable,
   CommonResponse,
   Dispatcher,
   DispatcherContext,
   ErrorHandler,
   isNil,
 } from "@airent/api";
+import { Awaitable } from "airent";
 import createHttpError from "http-errors";
 
 type Authenticator<CONTEXT> = (request: Request) => Awaitable<CONTEXT>;
