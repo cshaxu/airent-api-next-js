@@ -383,18 +383,24 @@ async function generate(argv) {
   // load config
   const config = await loadConfig(isVerbose);
 
+  const meta = [];
+
   if (config.apiNext.cronApiPath) {
     await buildCronJobApis(config, isVerbose);
+    meta.push("1C");
   }
   if (config.apiNext.debugApiPath) {
     await buildDebugApi(config, isVerbose);
+    meta.push("1D");
   }
   if (config.apiNext.webhookApiPath) {
     await buildWebhookApis(config, isVerbose);
+    meta.push("1W");
   }
   await buildPlugins(config, isVerbose);
+  meta.push(`${(config.apiNext.templates ?? []).length}P`);
 
-  console.log("[AIRENT-API-NEXT/INFO] Task completed.");
+  console.log(`[AIRENT-API-NEXT/INFO] Task completed: ${meta.join("/")}.`);
 }
 
 module.exports = { generate };
