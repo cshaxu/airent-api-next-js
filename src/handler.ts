@@ -52,7 +52,7 @@ function handleWith<CONTEXT, DATA, PARSED, RESULT, ERROR>(
         dispatcherContext.data,
         dispatcherContext.context
       );
-      if (isCustomResponse) {
+      if (isCustomResponse && "result" in commonResponse) {
         return commonResponse.result as Response;
       }
       return buildJsonResponse(commonResponse);
