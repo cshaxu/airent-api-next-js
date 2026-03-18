@@ -37,10 +37,10 @@
     "resources"
   ],
   "dependencies": {
-    "@airent/api": "github:cshaxu/airent-api-js#776850a829c195816b3ae8b4e5a08db9facca9e0",
+    "@airent/api": "github:cshaxu/airent-api-js#6f84c2730954c7b7a80d11ccaf3f1ca8fd5b3da4",
     "ejs": "^5.0.1",
     "http-errors": "^2.0.0",
-    "zod": "^3.23.8"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/async-lock": "^1.4.2",
