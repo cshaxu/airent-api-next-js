@@ -42,11 +42,20 @@
     "http-errors": "^2.0.0",
     "zod": "^4.3.6"
   },
+  "peerDependencies": {
+    "react": "^18.2.0 || ^19.0.0"
+  },
   "devDependencies": {
     "@types/async-lock": "^1.4.2",
     "@types/http-errors": "^2.0.5",
     "@types/node": "^25.5.0",
+    "@types/react": "^19.2.0",
     "crlf": "^1.1.1",
+    "react": "^19.2.0",
     "typescript": "^5.9.3"
+  },
+  "exports": {
+    ".": "./lib/index.js",
+    "./studio-view": "./lib/studio-view.js"
   }
 }

@@ -2,8 +2,8 @@ import { CommonResponse } from "@airent/api";
 import * as z from "zod";
 import { Context } from "../context";
 
-const Params = z.object({});
-type Params = z.infer<typeof Params>;
+export const Params = z.object({});
+export type Params = z.infer<typeof Params>;
 
 export const parser = (request: Request) =>
   request.json().then(Params.parseAsync);

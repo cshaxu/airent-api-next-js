@@ -9,7 +9,6 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-// Function to ask a question and store the answer in the config object
 function askQuestion(question, defaultAnswer) {
   return new Promise((resolve) =>
     rl.question(`${question} (${defaultAnswer}): `, resolve)
@@ -21,7 +20,13 @@ async function getShouldEnable(name) {
   return shouldEnable === "yes";
 }
 
-/** @typedef {Object} ApiNextConfig
+/** @typedef {Object} Template
+ *  @property {string} name
+ *  @property {string} outputPath
+ *  @property {boolean} skippable
+ */
+
+ /** @typedef {Object} ApiNextConfig
  *  @property {?string} libImportPath
  *  @property {string} appPath
  *  @property {string} airentApiPath
@@ -39,10 +44,11 @@ async function getShouldEnable(name) {
 /** @typedef {Object} Config
  *  @property {"commonjs" | "module"} type
  *  @property {?string} libImportPath
+ *  @property {string} generatedPath
  *  @property {string} schemaPath
  *  @property {string} entityPath
- *  @property {?string[]} [augmentors]
  *  @property {?Template[]} [templates]
+ *  @property {?string[]} [augmentors]
  *  @property {?ApiNextConfig} apiNext
  */
 
@@ -53,7 +59,11 @@ const AIRENT_API_NEXT_RESOURCES_PATH =
   "node_modules/@airent/api-next/resources";
 
 const API_NEXT_AUGMENTOR_PATH = `${AIRENT_API_NEXT_RESOURCES_PATH}/augmentor.js`;
-
+const API_NEXT_STUDIO_TEMPLATE_CONFIG = {
+  name: `${AIRENT_API_NEXT_RESOURCES_PATH}/studio-template.tsx.ejs`,
+  outputPath: "{generatedPath}/airent-api-next-studio.tsx",
+  skippable: false,
+};
 const API_NEXT_SERVER_CACHED_CLIENT_TEMPLATE_CONFIG = {
   name: `${AIRENT_API_NEXT_RESOURCES_PATH}/server-cached-client-template.ts.ejs`,
   outputPath: `{generatedPath}/server-clients/{kababEntityName}-cached.ts`,
@@ -229,6 +239,11 @@ async function configure() {
       "Webhook API Path",
       config.apiNext.webhookApiPath ?? "/api/webhooks"
     );
+  }
+
+  const shouldEnableStudio = await getShouldEnable("Airent Api Next Studio");
+  if (shouldEnableStudio) {
+    addTemplate(config, API_NEXT_STUDIO_TEMPLATE_CONFIG);
   }
 
   const content = JSON.stringify(config, null, 2) + "\n";

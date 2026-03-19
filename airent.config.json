@@ -98,6 +98,11 @@
       "name": "resources/server-update-one-template.ts.ejs",
       "outputPath": "{apiNext.appPath}{apiNext.airentApiPath}/update-one-{kababEntityName}/route.ts",
       "skippable": false
+    },
+    {
+      "name": "resources/studio-template.tsx.ejs",
+      "outputPath": "{generatedPath}/airent-api-next-studio.tsx",
+      "skippable": false
     }
   ],
   "api": {

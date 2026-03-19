@@ -2,8 +2,8 @@ import { CommonResponse, parseBodyWith } from "@airent/api";
 import * as z from "zod";
 import { Context } from "../context";
 
-const Params = z.object({});
-type Params = z.infer<typeof Params>;
+export const Params = z.object({});
+export type Params = z.infer<typeof Params>;
 
 export const parser = parseBodyWith(Params);
 
