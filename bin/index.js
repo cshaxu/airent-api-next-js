@@ -2,23 +2,16 @@
 
 const fs = require("fs");
 const path = require("path");
-const readline = require("readline");
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-function askQuestion(question, defaultAnswer) {
-  return new Promise((resolve) =>
-    rl.question(`${question} (${defaultAnswer}): `, resolve)
-  ).then((a) => (a?.length ? a : defaultAnswer));
-}
-
-async function getShouldEnable(name) {
-  const shouldEnable = await askQuestion(`Enable "${name}"`, "yes");
-  return shouldEnable === "yes";
-}
+const {
+  addTemplate,
+  createPrompt,
+  getShouldEnable,
+  loadJsonConfig,
+  normalizeConfigCollections,
+  writeJsonConfig,
+} = require("airent/resources/utils/configurator.js");
+const prompt = createPrompt();
+const { askQuestion } = prompt;
 
 /** @typedef {Object} Template
  *  @property {string} name
@@ -135,19 +128,7 @@ const API_NEXT_SERVER_TEMPLATE_CONFIGS = [
 ];
 
 async function loadConfig() {
-  const configContent = await fs.promises.readFile(CONFIG_FILE_PATH, "utf8");
-  const config = JSON.parse(configContent);
-  const augmentors = config.augmentors ?? [];
-  const templates = config.templates ?? [];
-  return { ...config, augmentors, templates };
-}
-
-function addTemplate(config, draftTemplate) {
-  const { templates } = config;
-  const template = templates.find((t) => t.name === draftTemplate.name);
-  if (template === undefined) {
-    templates.push(draftTemplate);
-  }
+  return normalizeConfigCollections(await loadJsonConfig(CONFIG_FILE_PATH));
 }
 
 async function configure() {
@@ -156,7 +137,7 @@ async function configure() {
   const isAugmentorEnabled = augmentors.includes(API_NEXT_AUGMENTOR_PATH);
   const shouldEnableApiNext = isAugmentorEnabled
     ? true
-    : await getShouldEnable("Api Next");
+    : await getShouldEnable(askQuestion, "Api Next");
   if (!shouldEnableApiNext) {
     return;
   }
@@ -187,7 +168,7 @@ async function configure() {
     config.apiNext.cronApiPath !== undefined;
   const shouldEnableCronApi = isCronApiEnabled
     ? true
-    : await getShouldEnable("Cron API");
+    : await getShouldEnable(askQuestion, "Cron API");
   if (shouldEnableCronApi) {
     config.apiNext.cronSourcePath = await askQuestion(
       "Cron Source Path",
@@ -208,7 +189,7 @@ async function configure() {
     config.apiNext.debugApiPath !== undefined;
   const shouldEnableDebugApi = isDebugApiEnabled
     ? true
-    : await getShouldEnable("Debug API");
+    : await getShouldEnable(askQuestion, "Debug API");
   if (shouldEnableDebugApi) {
     config.apiNext.debugSourcePath = await askQuestion(
       "Debug Source Path",
@@ -229,7 +210,7 @@ async function configure() {
     config.apiNext.webhookApiPath !== undefined;
   const shouldEnableWebhookApi = isWebhookApiEnabled
     ? true
-    : await getShouldEnable("Webhook API");
+    : await getShouldEnable(askQuestion, "Webhook API");
   if (shouldEnableWebhookApi) {
     config.apiNext.webhookSourcePath = await askQuestion(
       "Webhook Source Path",
@@ -241,13 +222,17 @@ async function configure() {
     );
   }
 
-  const shouldEnableStudio = await getShouldEnable("Airent Api Next Studio");
-  if (shouldEnableStudio) {
+  const isStudioEnabled = config.templates.some(
+    (t) => t.name === API_NEXT_STUDIO_TEMPLATE_CONFIG.name
+  );
+  const shouldEnableStudio = isStudioEnabled
+    ? true
+    : await getShouldEnable(askQuestion, "Airent Api Next Studio");
+  if (shouldEnableStudio && !isStudioEnabled) {
     addTemplate(config, API_NEXT_STUDIO_TEMPLATE_CONFIG);
   }
 
-  const content = JSON.stringify(config, null, 2) + "\n";
-  await fs.promises.writeFile(CONFIG_FILE_PATH, content);
+  await writeJsonConfig(CONFIG_FILE_PATH, config);
   console.log(`[AIRENT-API-NEXT/INFO] Package configured.`);
 }
 
@@ -263,7 +248,7 @@ async function main(args) {
       await configure();
     }
   } finally {
-    rl.close();
+    prompt.close();
   }
 }
 

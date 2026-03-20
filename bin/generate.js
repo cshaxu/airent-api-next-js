@@ -6,7 +6,8 @@ const ejs = require("ejs");
 const fs = require("fs");
 const path = require("path");
 
-const utils = require("airent/resources/utils");
+const codeUtils = require("airent/resources/utils/code.js");
+const pathUtils = require("airent/resources/utils/path.js");
 
 // UTILITIES //
 
@@ -75,10 +76,12 @@ async function loadConfig(isVerbose) {
 
 function buildPackage(absoluteSourcePath, targetPath, config) {
   if (targetPath.startsWith(".")) {
-    const relativePath = path
-      .relative(absoluteSourcePath, path.join(PROJECT_PATH, targetPath))
-      .replaceAll("\\", "/");
-    return `${relativePath}${utils.getModuleSuffix(config)}`;
+    const absoluteTargetPath = path.join(PROJECT_PATH, targetPath);
+    const relativePath = pathUtils.buildRelativePath(
+      absoluteSourcePath,
+      absoluteTargetPath
+    );
+    return `${relativePath}${codeUtils.getModuleSuffix(config)}`;
   }
   return targetPath;
 }
@@ -174,7 +177,7 @@ async function generateInner(
         config
       ),
     };
-    const data = { packages, entries, config, utils };
+    const data = { packages, entries, config, utils: codeUtils };
     const content = ejs.render(template, data);
     await writeFileContent(
       path.dirname(absoluteOutputPath),
@@ -196,7 +199,7 @@ async function generateInner(
       ),
     };
     const functions = entries.map(async (entry) => {
-      const data = { packages, entry, config, utils };
+      const data = { packages, entry, config, utils: codeUtils };
       const outputContent = ejs.render(template, data);
       await writeFileContent(
         absoluteOutputPath,
@@ -224,7 +227,7 @@ async function generateInner(
           config
         ),
       };
-      const data = { packages, entry, config, utils };
+      const data = { packages, entry, config, utils: codeUtils };
       const outputContent = ejs.render(template, data);
       await writeFileContent(
         absoluteOutputFolderPath,
@@ -273,6 +276,11 @@ async function buildCronJobApis(config, isVerbose) {
           .replaceAll('"', "")
       )
       .at(0);
+    if (!schedule?.length) {
+      throw new Error(
+        `[AIRENT-API-NEXT/ERROR] Cron source '${name}' must export 'schedule'.`
+      );
+    }
     return { sourcePackage, maxDuration, schedule };
   };
 
