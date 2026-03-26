@@ -37,20 +37,22 @@
     "resources"
   ],
   "dependencies": {
-    "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161",
-    "@airent/api": "github:cshaxu/airent-api-js#ffd93b193d2a846fba2ff4bfb09d569d9871bb86",
     "ejs": "^5.0.1",
     "http-errors": "^2.0.0",
     "zod": "^4.3.6"
   },
   "peerDependencies": {
+    "@airent/api": "github:cshaxu/airent-api-js#ee8cea6f134851f3bff4f8b41db04101a765f3b1",
+    "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161",
     "react": "^18.2.0 || ^19.0.0"
   },
   "devDependencies": {
+    "@airent/api": "github:cshaxu/airent-api-js#ee8cea6f134851f3bff4f8b41db04101a765f3b1",
     "@types/async-lock": "^1.4.2",
     "@types/http-errors": "^2.0.5",
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.0",
+    "airent": "github:cshaxu/airent-js#3ed460e82f66ceb038ab833116f1201830a7d161",
     "crlf": "^1.1.1",
     "react": "^19.2.0",
     "typescript": "^5.9.3"
