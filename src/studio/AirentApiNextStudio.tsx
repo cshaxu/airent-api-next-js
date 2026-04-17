@@ -398,6 +398,10 @@ function buildStyles(palette: StudioPalette): Record<string, CSSProperties> {
   };
 };
 
+function getElapsedSeconds(startedAt: number) {
+  return Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
+}
+
 export function AirentApiNextStudioView({ groups }: Props) {
   const [palette, setPalette] = useState<StudioPalette>(DEFAULT_STUDIO_PALETTE);
   const firstGroupKey = groups[0]?.key ?? "entities";
@@ -425,6 +429,8 @@ export function AirentApiNextStudioView({ groups }: Props) {
   const [headersJson, setHeadersJson] = useState("{}");
   const [responseState, setResponseState] = useState<ResponseState | null>(null);
   const [requestPhase, setRequestPhase] = useState<RequestPhase>("idle");
+  const [requestStartedAt, setRequestStartedAt] = useState<number | null>(null);
+  const [requestElapsedSeconds, setRequestElapsedSeconds] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const detailsScrollRef = useRef<HTMLDivElement | null>(null);
@@ -533,7 +539,21 @@ export function AirentApiNextStudioView({ groups }: Props) {
     setErrorMessage(null);
     setResponseState(null);
     setRequestPhase("idle");
+    setRequestStartedAt(null);
+    setRequestElapsedSeconds(0);
   }, [selectedEndpoint]);
+
+  useEffect(() => {
+    if (requestPhase !== "pending" || requestStartedAt === null) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setRequestElapsedSeconds(getElapsedSeconds(requestStartedAt));
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [requestPhase, requestStartedAt]);
 
   useEffect(() => {
     if (requestPhase === "idle") {
@@ -598,10 +618,14 @@ export function AirentApiNextStudioView({ groups }: Props) {
   }
 
   async function submit(): Promise<void> {
+    const startedAt = Date.now();
+
     try {
       setIsSubmitting(true);
       setErrorMessage(null);
       setRequestPhase("pending");
+      setRequestStartedAt(startedAt);
+      setRequestElapsedSeconds(0);
       const headers: Record<string, string> = {};
       let body: string | undefined;
 
@@ -656,9 +680,11 @@ export function AirentApiNextStudioView({ groups }: Props) {
         formattedBody = text;
       }
       setResponseState({ status: response.status, body: formattedBody });
+      setRequestElapsedSeconds(getElapsedSeconds(startedAt));
       setRequestPhase(response.ok ? "success" : "error");
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Request failed");
+      setRequestElapsedSeconds(getElapsedSeconds(startedAt));
       setRequestPhase("error");
     } finally {
       setIsSubmitting(false);
@@ -669,10 +695,12 @@ export function AirentApiNextStudioView({ groups }: Props) {
     requestPhase === "idle"
       ? "Not submitted yet"
       : requestPhase === "pending"
-        ? "Pending"
+        ? `Pending (${requestElapsedSeconds}s)`
         : requestPhase === "success"
-          ? `Success (${responseState?.status ?? 200})`
-          : `Error${responseState?.status ? ` (${responseState.status})` : ""}`;
+          ? `Success (${responseState?.status ?? "unknown"}, ${requestElapsedSeconds}s)`
+          : responseState?.status
+            ? `Error (${responseState.status}, ${requestElapsedSeconds}s)`
+            : `Error (${requestElapsedSeconds}s)`;
 
   const rootStyle = isMobile
     ? styles.root
